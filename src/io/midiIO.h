@@ -11,14 +11,16 @@ const bool sendMidi = true;
 void sendMidiCC(byte cc, byte val, byte midiChannel)
 {
     midiChannel++;
-    setPixel(1, 0, 0, 255); // set indicator leds
-    setPixel(2, 0, 0, 255);
-    pixels.show();
+    // setPixel(1, 0, 0, 255); // set indicator leds
+    // setPixel(2, 0, 0, 255);
+    // pixels.show();
+    tickMidiOutIndicator();
     // delay(10);
 
     MIDI.sendControlChange(cc, val, midiChannel);
     if (sendMidi)
     {
+        tickUSBIndicator();
         usbMidiControlChange(midiChannel, cc, val);
         MidiUSB.flush();
     }
