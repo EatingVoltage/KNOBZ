@@ -51,7 +51,7 @@ void setup()
   // MidiUSB.flush();
 
   settings = loadSettings();
-  settings.midiChannel = 0;
+  settings.midiChannel = 1;
   settings.midiDefaultVel = 63;
 
   MIDI.begin();
@@ -102,19 +102,13 @@ void loop()
 
   // get fader & knobs values
   muxRead();
-  // muxDebug();
+  // muxDebug(); // get raw values to serial
 
   // get Button Values
   inputValues = shiftInUpdate();
   updateButtons(tFrame);
 
   readLidarSensor(8); // set running average sampling amount - slew rate limiter
-  // if(abs(oldSensorReading - sensorReading) > 1)
-  // {
-  //   oldSensorReading = sensorReading;
-  //   // update sensor knob here
-  //   // debugLidarSensor();
-  // }
 
   // update
   updateKnobs();
@@ -123,7 +117,7 @@ void loop()
   // output midi
   sendButtonMidi(); // midi notes 0-4
   sendControllerMidi(); // send 
-  // forwardMidi();
+  forwardMidi();
 
   // write to Leds
   animateNeopixel();
@@ -136,5 +130,6 @@ void loop()
   MidiUSB.flush(); // send usb midi - clear buffer needed for stable operation
 
   // Pause before next pass through loop
+  // delay(50);
   delay(5);
 }
