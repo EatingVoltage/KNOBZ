@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-struct knob
+struct knob_t
 {
     // value
     int readBuf = 0;
@@ -21,7 +21,7 @@ struct knob
     byte midiCC = 0;
 };
 
-knob knobs[37];
+knob_t knobs[37];
 
 void controllerBegin() // set midi config
 {
@@ -61,7 +61,7 @@ void updateKnobs()
     // air knob - lidar sensor
 
     int x = constrain(sensorReading, 0, LIDAR_UPPER_LIMIT);
-    // Serial.println(knobValues[36]); 
+    // Serial.println(knobValues[36]);
     knobValues[36] = map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0);
     // debugLidarSensor();
     // Serial.println(knobValues[36]);
@@ -100,7 +100,7 @@ void updateKnobs()
 
     // debugging
     // if (knobs[36].hasNew)
-        // Serial.println(knobs[36].val);
+    // Serial.println(knobs[36].val);
     // for (byte i = 0; i < 12; i++)
     // {
     //     if (faders[i].hasNew)
@@ -113,7 +113,7 @@ void updateKnobs()
     // }
 }
 
-void animateKnob(knob &myKnob)
+void animateKnob(knob_t &myKnob)
 {
     byte res = myKnob.target;
     float perc;
@@ -130,10 +130,40 @@ void animateKnob(knob &myKnob)
     }
 }
 
-void setAnimation(knob &myKnob, byte target, int duration)
+void setAnimation(knob_t &myKnob, byte target, int duration)
 {
     myKnob.t0 = tFrame;
     myKnob.dur = duration;
     myKnob.origin = myKnob.val;
     myKnob.target = target;
+}
+
+void saveConfig(byte slot)
+{
+    saveState_t saveState;
+    // int addr = slot * sizeof(saveState) + sizeof(settings);
+    // EEPROM_writeAnything(addr, saveState);
+    for (byte i = 0; i < 37; i++)
+    {
+        // knobs[i].midiChannel = saveState.knobConfig[i].midiChannel;
+        // knobs[i].midiCC = saveState.knobConfig[i].cc;
+        // knobs[i].min = saveState.knobConfig[i].min;
+        // knobs[i].max = saveState.knobConfig[i].max;
+    }
+}
+
+void loadConfig(byte slot)
+{
+    // get data here
+    saveState_t saveState;
+
+    for (byte i = 0; i < 37; i++)
+    {
+        // saveState.knobConfig[i].midiChannel = knobs[i].midiChannel;
+        // saveState.knobConfig[i].cc = knobs[i].midiCC;
+        // saveState.knobConfig[i].min = knobs[i].max;
+        // saveState.knobConfig[i].min = knobs[i].max;
+    }
+    // int addr = slot * sizeof(saveState) + sizeof(settings);
+    // EEPROM_readAnything(addr, saveState);
 }

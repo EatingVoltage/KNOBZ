@@ -72,32 +72,7 @@ struct knobConfig_t
     byte max;
 };
 
-struct allKnobConfig_t
+struct saveState_t
 {
     knobConfig_t knobConfig[37];
 };
-
-allKnobConfig_t knobConfig;
-
-void updateKnobConfig(byte index, byte midiChannel, byte cc, byte min, byte max) // call for every knob before calling saveKnobConfig()
-{
-    knobConfig.knobConfig[index].midiChannel = midiChannel;
-    knobConfig.knobConfig[index].cc = cc;
-    knobConfig.knobConfig[index].min = min;
-    knobConfig.knobConfig[index].midiChannel = max;
-}
-
-void saveKnobConfig(byte slot)
-{
-    int addr = slot * sizeof(knobConfig) + sizeof(settings);
-    EEPROM_writeAnything(addr, knobConfig);
-}
-
-void loadKnobConfig(byte slot)
-{
-    int addr = slot * sizeof(knobConfig) + sizeof(settings);
-    EEPROM_readAnything(addr, knobConfig);
-    // todo transfer from knobConfig to maching state (knob[i]...)
-}
-
-

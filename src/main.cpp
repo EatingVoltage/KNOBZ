@@ -51,8 +51,9 @@ void setup()
   // MidiUSB.flush();
 
   settings = loadSettings();
-  settings.midiChannel = 1;
-  settings.midiDefaultVel = 63;
+  // settings.midiChannel = 1;
+  // settings.midiDefaultVel = 63;
+  // saveSettings();
 
   MIDI.begin();
 
@@ -86,10 +87,14 @@ void setup()
   oledPrint("starting...", 0, 3, 0);
   delay(200);
   oledPrint("SG20", 100, 3, 0);
-  delay(1000);
 
+  // TEST ZONE
+  // oled.clear();
+  // oledPrint(String(sizeof()), 0, 0, 0);
+
+  // 
+  delay(1000);
   MidiUSB.flush();
-  // delay(1000);
   oled.clear();
 }
 

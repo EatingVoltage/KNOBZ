@@ -10,11 +10,11 @@ todo:
 -midi activity led to non blocking
 
 in progress:
--menu
 -forward usb midi to dinmidi
 -forward dinmidi to usbmidi
 
 done
+-menu
 -cc/channel editor
 -buttons
 -midi activity led
