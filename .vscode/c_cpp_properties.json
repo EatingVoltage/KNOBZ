@@ -1,0 +1,84 @@
+{
+    "configurations": [
+        {
+            "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
+        },
+        {
+            "name": "Win32",
+            "includePath": [
+                "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/Adafruit NeoPixel",
+                "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/MIDI Library/src",
+                "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/MIDIUSB/src",
+                "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/SSD1306Ascii/src",
+                "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/VL53L0X",
+                "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                "C:/Users/samue/.platformio/lib/Adafruit BusIO",
+                "C:/Users/samue/.platformio/lib/Adafruit BusIO@1.3.3",
+                "C:/Users/samue/.platformio/lib/Adafruit GFX Library",
+                "C:/Users/samue/.platformio/lib/Adafruit SSD1306",
+                "C:/Users/samue/.platformio/lib/Adafruit_VL53L0X/src",
+                "C:/Users/samue/.platformio/lib/LiquidCrystal_PCF8574_ID1165/src",
+                "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                "c:/Users/samue/Documents/Projects/TLFB/include",
+                "c:/Users/samue/Documents/Projects/TLFB/src",
+                "C:/Users/samue/.platformio/packages/framework-arduino-avr/cores/arduino",
+                "C:/Users/samue/.platformio/packages/framework-arduino-avr/variants/leonardo",
+                "C:/Users/samue/.platformio/packages/tool-unity",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/Adafruit NeoPixel",
+                    "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/MIDI Library/src",
+                    "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/MIDIUSB/src",
+                    "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/SSD1306Ascii/src",
+                    "c:/Users/samue/Documents/Projects/TLFB/.pio/libdeps/leonardo/VL53L0X",
+                    "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
+                    "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/SPI/src",
+                    "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/Wire/src",
+                    "C:/Users/samue/.platformio/lib/Adafruit BusIO",
+                    "C:/Users/samue/.platformio/lib/Adafruit BusIO@1.3.3",
+                    "C:/Users/samue/.platformio/lib/Adafruit GFX Library",
+                    "C:/Users/samue/.platformio/lib/Adafruit SSD1306",
+                    "C:/Users/samue/.platformio/lib/Adafruit_VL53L0X/src",
+                    "C:/Users/samue/.platformio/lib/LiquidCrystal_PCF8574_ID1165/src",
+                    "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/HID/src",
+                    "C:/Users/samue/.platformio/packages/framework-arduino-avr/libraries/SoftwareSerial/src",
+                    "c:/Users/samue/Documents/Projects/TLFB/include",
+                    "c:/Users/samue/Documents/Projects/TLFB/src",
+                    "C:/Users/samue/.platformio/packages/framework-arduino-avr/cores/arduino",
+                    "C:/Users/samue/.platformio/packages/framework-arduino-avr/variants/leonardo",
+                    "C:/Users/samue/.platformio/packages/tool-unity",
+                    ""
+                ]
+            },
+            "defines": [
+                "PLATFORMIO=50000",
+                "ARDUINO_AVR_LEONARDO",
+                "USB_MIDI",
+                "F_CPU=16000000L",
+                "ARDUINO_ARCH_AVR",
+                "ARDUINO=10808",
+                "USB_VID=0x2341",
+                "USB_PID=0x8036",
+                "USB_PRODUCT=\"Arduino Leonardo\"",
+                "USB_MANUFACTURER=\"Arduino\"",
+                "__AVR_ATmega32U4__",
+                ""
+            ],
+            "intelliSenseMode": "clang-x64",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "C:/Users/samue/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerArgs": [
+                "-mmcu=atmega32u4",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
