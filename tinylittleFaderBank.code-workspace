@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\Templates"
+		},
+		{
+			"name": "74hc165_shift_in",
+			"path": "..\\Templates\\74hc165_shift_in"
+		},
+		{
+			"name": "ssd1306_small",
+			"path": "..\\Templates\\ssd1306_small"
+		}
+	],
+	"settings": {}
+}
