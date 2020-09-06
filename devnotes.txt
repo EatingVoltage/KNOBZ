@@ -3,19 +3,19 @@ todo:
 -cc conflict warning
 -save config of all knobs
 -load config at startup and indicate on oled on startup
--name presets / show preset name on startup
--add smoothing option (maybe hardcode to knobs only)
--fix neopixel anims
--led startup anim
--midi activity led to non blocking
-
-in progress:
 -forward usb midi to dinmidi
 -forward dinmidi to usbmidi
 
-done
+done:
+-midi activity led to non blocking
+-led startup anim
+-fix neopixel anims
 -menu
 -cc/channel editor
 -buttons
 -midi activity led
 -usb midi
+
+dream features:
+-add smoothing option (maybe hardcode to knobs only)
+-name presets / show preset name on startup

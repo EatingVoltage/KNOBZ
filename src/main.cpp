@@ -9,6 +9,7 @@
 
 // neopixel leds
 #include "io/ws2812.h"
+#include <io/indicatorLeds.h> 
 
 // lidar
 #include <io/lidar.h>
@@ -43,8 +44,8 @@ bool redrawOled = false; // flag to trigger oled redraw
 #include <menu.h>
 
 #include <sendMidi.h>
-
 #include <io/animateNeopixel.h>
+
 
 void setup()
 {
@@ -64,12 +65,13 @@ void setup()
   // }
   // Serial.println("starting");
 
-  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
-  pixels.setBrightness(LED_BRIGHTNESS);
-  for (byte i = 0; i < 4; i++)
+  neopixelBegin();
+
+  for (byte i = 0; i < 4; i++) // turn off leds
   {
     setPixel(i, 0, 0, 0);
   }
+
   pixels.show();
 
   shiftInInit();
@@ -92,7 +94,24 @@ void setup()
   // oled.clear();
   // oledPrint(String(sizeof()), 0, 0, 0);
 
-  // 
+  //
+
+  byte val = 0;
+  for (byte i = 0; i < 12; i++)
+  {
+    // read from knobs a few times
+    muxRead();
+    updateKnobs();
+  }
+  byte h = getHueFromKnobs();
+
+  for (byte j = 0; j < 255; j++)
+  {
+    animateNeopixel(j);
+    pixels.show();
+    delay(2);
+  }
+
   delay(1000);
   MidiUSB.flush();
   oled.clear();
@@ -120,12 +139,13 @@ void loop()
   updateMenu();
 
   // output midi
-  sendButtonMidi(); // midi notes 0-4
-  sendControllerMidi(); // send 
+  sendButtonMidi();     // midi notes 0-4
+  sendControllerMidi(); // send
   forwardMidi();
 
   // write to Leds
   animateNeopixel();
+  updateIndicators();
   pixels.show();
 
   // write to oled
