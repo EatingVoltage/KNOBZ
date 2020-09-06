@@ -19,7 +19,7 @@ void oledBegin()
     oled.begin(&Adafruit128x32, SSD1306_I2C_ADDRESS);
 }
 
-void oledPrint(String text, byte col, byte row, byte style)
+void oledPrint(String text, byte col=0, byte row=0, byte style=0)
 {
     switch (style)
     {

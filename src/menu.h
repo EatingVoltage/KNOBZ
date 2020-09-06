@@ -77,64 +77,12 @@ void drawMenu()
         case 3:
             oledPrint("Knobsmooth. :", 0, 1, 1);
             break;
-        case 4:
-            oledPrint("select Save Slot", 0, 1, 1);
-            byte saveSlot = 100; // 0-3
-            bool done = false;
-            while (!done)
-            {
-                inputValues = shiftInUpdate();
-                updateButtons(millis());
-                if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[1].fell)
-                {
-                    for (byte i = 0; i < 4; i++)
-                    {
-                        if (controllerButton[i].fell)
-                        {
-                            saveSlot = i;
-                        }
-                    }
-                    done = true;
-                }
-                delay(50); // easy, buoy
-            }
-            if (saveSlot != 100)
-            {
-                oledPrint("save slot" + String(saveSlot), 0, 0, 1);
-                delay(1000);
-            }
-            // save the data
+        case 4: // save
+
             break;
 
-        case 5:
-            oledPrint("select Load Slot", 0, 1, 1);
-            byte loadSlot = 100; // 0-3
-            done = false;
-            while (!done)
-            {
-                inputValues = shiftInUpdate();
-                updateButtons(millis());
-                if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[1].fell)
-                {
-                    for (byte i = 0; i < 4; i++)
-                    {
-                        if (controllerButton[i].fell)
-                        {
-                            loadSlot = i;
-                        }
-                    }
-                    done = true;
-                }
-                delay(50); // easy, boy
-                if (modeButton.fell)
-                    done = true;
-            }
-            // load data
-            if (loadSlot != 100)
-            {
-                oledPrint("load slot" + String(loadSlot), 0, 0, 1);
-                delay(1000);
-            }
+        case 5: // load
+
             break;
 
         default:
@@ -237,14 +185,66 @@ void updateMenu()
             case 3: // smoothing editing
 
                 break;
-            case 4: // CC editing
-
+            case 4: // save controller state
+                oledPrint("select Save Slot", 0, 1, 1);
+                byte saveSlot = 100; // 0-3
+                bool done = false;
+                while (!done)
+                {
+                    inputValues = shiftInUpdate();
+                    updateButtons(millis());
+                    // get save slot
+                    if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[1].fell)
+                    {
+                        for (byte i = 0; i < 4; i++)
+                        {
+                            if (controllerButton[i].fell)
+                            {
+                                saveSlot = i;
+                            }
+                        }
+                        done = true;
+                    }
+                    delay(50); // easy, buoy
+                }
+                if (saveSlot != 100) // validation
+                // save the data
+                {
+                    oledPrint("save slot" + String(saveSlot), 0, 0, 1);
+                    saveConfig(saveSlot);
+                    delay(1000);
+                }
                 break;
-            case 5: // CC editing
-
-                break;
-
-            default:
+            case 5: // load
+                oledPrint("select Load Slot", 0, 1, 1);
+                byte loadSlot = 100; // 0-3
+                done = false;
+                while (!done)
+                {
+                    inputValues = shiftInUpdate();
+                    updateButtons(millis());
+                    if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[1].fell)
+                    {
+                        for (byte i = 0; i < 4; i++)
+                        {
+                            if (controllerButton[i].fell)
+                            {
+                                loadSlot = i;
+                            }
+                        }
+                        done = true;
+                    }
+                    delay(50); // easy, boy
+                    if (modeButton.fell)
+                        done = true;
+                }
+                // load data
+                if (loadSlot != 100)
+                {
+                    oledPrint("load slot" + String(loadSlot), 0, 0, 1);
+                    // loadConfig(loadSlot);
+                    delay(1000);
+                }
                 break;
             }
 
