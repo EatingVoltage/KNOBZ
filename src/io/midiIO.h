@@ -10,6 +10,7 @@ const bool sendMidi = true;
 
 void sendMidiCC(byte cc, byte val, byte midiChannel)
 {
+    midiChannel++;
     setPixel(1, 0, 0, 255); // set indicator leds
     setPixel(2, 0, 0, 255);
     pixels.show();
@@ -22,11 +23,12 @@ void sendMidiCC(byte cc, byte val, byte midiChannel)
         MidiUSB.flush();
     }
     if (sendSerialDebug)
-        Serial.println("CC" + String(cc) + ": " + String(val));
+        Serial.println("CC" + String(cc) + ": " + String(val) + " CH:" + String(midiChannel));
 }
 
 void sendMidiPitchbend(int val, byte midiChannel)
 {
+    midiChannel++;
     if (sendMidi)
         MIDI.sendPitchBend(val, midiChannel);
     if (sendSerialDebug)
@@ -35,6 +37,7 @@ void sendMidiPitchbend(int val, byte midiChannel)
 
 void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
 {
+    midiChannel++;
     MIDI.sendNoteOn(pitch, velocity, midiChannel);
     if (sendMidi)
     {
@@ -46,6 +49,7 @@ void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
 
 void sendMidiNoteOff(byte pitch, byte midiChannel)
 {
+    midiChannel++;
     MIDI.sendNoteOff(pitch, 0, midiChannel);
     if (sendMidi)
     {
@@ -57,6 +61,7 @@ void sendMidiNoteOff(byte pitch, byte midiChannel)
 
 void allNotesOff(byte midiChannel)
 {
+    midiChannel++;
     for (byte i = 0; i > 128; i++)
     {
         sendMidiNoteOff(i, midiChannel);
