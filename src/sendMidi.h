@@ -20,7 +20,7 @@ void sendButtonMidi()
         {
             if (!menu.active)
             {
-                sendMidiNoteOn(i, settings.midiDefaultVel, settings.midiChannel);
+                sendMidiNoteOn(i, MIDI_DEFAULT_VEL, settings.midiChannel);
                 delay(1);
                 sendMidiNoteOn(i, 0, settings.midiChannel);
             }

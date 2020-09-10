@@ -16,10 +16,11 @@
 
 #define INDICATOR_DUR 15 // midi traffic indicator led blink duration ms
 
+#define MIDI_DEFAULT_VEL 64
+
 struct controllerSettings
 {
-  byte midiChannel = 1;
-  byte midiDefaultVel = 20;
+  byte midiChannel = 1; // channel to send noteOn and noteOffs with controller buttons
 };
 
 controllerSettings settings;
