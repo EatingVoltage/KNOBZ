@@ -5,7 +5,7 @@
 #include <EEPROM.h>
 #define EEPROM_ADDR 0
 
-#define PLUG_INDIC_PIN 7 // pin number of plug 
+#define PLUG_INDIC_PIN 7 // pin number of plug pin
 
 #define POT_TRSH 15 // knob threshold. must be high enough to get rid of pot/fader noise.
 

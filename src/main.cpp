@@ -87,7 +87,7 @@ void setup()
   lidarBegin(); // uses wire
   controllerBegin();
 
-  oledPrint("tinyLiddlFaderBank", 0, 1, 3);
+  oledPrint("tinyLittlFaderBank", 0, 1, 3);
   delay(300);
   oledPrint("loading slot " + String(slot + 1), 0, 3, 0);
   // delay(400);
