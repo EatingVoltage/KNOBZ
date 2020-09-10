@@ -4,17 +4,17 @@
 
 #include <EEPROM.h>
 
-const byte POT_TRSH = 15;
+#define POT_TRSH 15
 
-const byte LED_BRIGHTNESS = 20;
+#define LED_BRIGHTNESS 20
 
-const int LIDAR_UPPER_LIMIT = 400;
+#define LIDAR_UPPER_LIMIT 400
 
-const int LIDAR_SMOOTHING = 10;
+#define LIDAR_SMOOTHING 10
 
-const int MENU_TIMEOUT = 5000;
+#define MENU_TIMEOUT 5000
 
-const int INDICATOR_DUR = 15; // midi traffic indicator led blink duration ms
+#define INDICATOR_DUR 15 // midi traffic indicator led blink duration ms
 
 struct controllerSettings
 {
@@ -24,7 +24,7 @@ struct controllerSettings
 
 controllerSettings settings;
 
-const byte EEPROM_ADDR = 0;
+#define EEPROM_ADDR 0
 
 // functions to store complex data structures to the eeprom
 
@@ -57,6 +57,7 @@ void saveSettings()
 {
     // sava data here
     EEPROM_writeAnything(EEPROM_ADDR, settings);
+    // EEPROM.put(EEPROM_ADDR, settings);
 }
 
 controllerSettings loadSettings()
@@ -64,6 +65,7 @@ controllerSettings loadSettings()
     controllerSettings res;
     // load data here
     EEPROM_readAnything(EEPROM_ADDR, res);
+    // EEPROM.get(EEPROM_ADDR, settings);
     return res;
 }
 
@@ -74,9 +76,4 @@ struct knobConfig_t
     byte cc;
     byte min;
     byte max;
-};
-
-struct saveState_t
-{
-    knobConfig_t knobConfig[37];
 };

@@ -138,32 +138,34 @@ void setAnimation(knob_t &myKnob, byte target, int duration)
     myKnob.target = target;
 }
 
-void saveConfig(byte slot)
+void saveConfig(byte slot) // slots 0-3
 {
-    saveState_t saveState;
-    // int addr = slot * sizeof(saveState) + sizeof(settings);
-    // EEPROM_writeAnything(addr, saveState);
+    knobConfig_t saveState;
     for (byte i = 0; i < 37; i++)
     {
-        // knobs[i].midiChannel = saveState.knobConfig[i].midiChannel;
-        // knobs[i].midiCC = saveState.knobConfig[i].cc;
-        // knobs[i].min = saveState.knobConfig[i].min;
-        // knobs[i].max = saveState.knobConfig[i].max;
+        int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * 37) + (sizeof(knobConfig_t) * i);
+        saveState.midiChannel = knobs[i].midiChannel;
+        saveState.cc = knobs[i].midiCC;
+        saveState.min = knobs[i].min;
+        saveState.max = knobs[i].max;
+        EEPROM_writeAnything(addr, saveState);
     }
 }
 
 void loadConfig(byte slot)
 {
     // get data here
-    saveState_t saveState;
+    knobConfig_t saveState; // pack of config values for one knob
 
     for (byte i = 0; i < 37; i++)
     {
-        // saveState.knobConfig[i].midiChannel = knobs[i].midiChannel;
-        // saveState.knobConfig[i].cc = knobs[i].midiCC;
-        // saveState.knobConfig[i].min = knobs[i].max;
-        // saveState.knobConfig[i].min = knobs[i].max;
+        int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * 37) + (sizeof(knobConfig_t) * i);
+        EEPROM_readAnything(addr, saveState);
+
+        knobs[i].midiChannel = saveState.midiChannel;
+        knobs[i].midiCC = saveState.cc;
+        knobs[i].min = saveState.min;
+        knobs[i].max = saveState.max;
     }
-    // int addr = slot * sizeof(saveState) + sizeof(settings);
-    // EEPROM_readAnything(addr, saveState);
+    oledPrint("channel: " + saveState.midiChannel);
 }

@@ -49,8 +49,6 @@ bool redrawOled = false; // flag to trigger oled redraw
 
 void setup()
 {
-  // MidiUSB.flush();
-
   // settings = loadSettings();
   settings.midiChannel = 1;
   settings.midiDefaultVel = 63;
