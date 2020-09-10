@@ -6,12 +6,6 @@
 #define NUMPIXELS 4 // Popular NeoPixel ring size
 Adafruit_NeoPixel pixels(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
 
-void neopixelBegin()
-{
-  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
-  pixels.setBrightness(LED_BRIGHTNESS);
-}
-
 void setPixel(byte index, byte h, byte s, byte v)
 { // hsv to rgb converter
   // this is the algorithm to convert from RGB to HSV
@@ -63,4 +57,15 @@ void setPixel(byte index, byte h, byte s, byte v)
     break;
   }
   pixels.setPixelColor(index, red, green, blue);
+}
+
+void neopixelBegin()
+{
+  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  pixels.setBrightness(LED_BRIGHTNESS);
+  for (byte i = 0; i < NUMPIXELS; i++) // turn off leds
+  {
+    setPixel(i, 0, 0, 0);
+  }
+  pixels.show();
 }
