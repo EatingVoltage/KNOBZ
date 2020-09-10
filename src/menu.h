@@ -5,11 +5,10 @@ struct menu_t
     byte pos = 0;
     bool active = false;
     bool editing = false;
-    byte items = 7; // number of menu items
+    byte items = 6; // number of menu items
     long t0 = 0;
     byte editingKnob;
     byte currentVal = 0; // temp space for numerical menu items
-    // bool ccConflict = false;
 };
 
 menu_t menu;
@@ -20,18 +19,18 @@ void drawMenu()
 
     oled.clear();
 
-    if (!menu.editing)
+    if (!menu.editing) // selecting menu item
     {
-        oledPrint("--------MENU--------" + String(menu.pos + 1), 0, 0, 0);
+        oledPrint("---------MENU-------" + String(menu.pos), 0, 0, 0);
         oledPrint("<-", 0, 3, 0);
-        oledPrint("ok", 60, 3, 0);
-        oledPrint("->", 110, 3, 0);
+        oledPrint("ok", 63, 3, 0);
+        oledPrint("->", 115, 3, 0);
 
         switch (menu.pos)
         {
         case 0:
             oledPrint("Edit Knob " + String(menu.editingKnob) + " CC " + String(knobs[menu.editingKnob].midiCC), 0, 1, 1);
-                
+
             break;
         case 1:
             oledPrint("Edit Knob " + String(menu.editingKnob) + " Channel", 0, 1, 1);
@@ -66,7 +65,7 @@ void drawMenu()
         switch (menu.pos)
         {
         case 0:
-            oledPrint("Knob " + String(menu.editingKnob) + " CC:" + String(knobs[menu.editingKnob].midiCC), 0, 1, 1);
+            oledPrint("Knob " + String(menu.editingKnob) + " CC: " + String(knobs[menu.editingKnob].midiCC), 0, 1, 1);
             for (byte i = 0; i < 37; i++)
             {
                 if (i != menu.editingKnob)
@@ -74,22 +73,21 @@ void drawMenu()
                     if ((knobs[menu.editingKnob].midiCC == knobs[i].midiCC) && (knobs[menu.editingKnob].midiChannel == knobs[i].midiChannel))
                     {
                         // menu.ccConflict = true;
-                        oledPrint("CC/CH taken!", 35, 3, 0);
+                        oledPrint("! CC/CH taken !", 25, 3, 0);
                     }
                 }
             }
 
             break;
         case 1:
-            oledPrint("Knob " + String(menu.editingKnob) + " CH:" + String(knobs[menu.editingKnob].midiChannel + 1), 0, 1, 1);
-            for (byte i = 0; i < 37; i++)
+            oledPrint("Knob " + String(menu.editingKnob) + " CH: " + String(knobs[menu.editingKnob].midiChannel + 1), 0, 1, 1);
+            for (byte i = 0; i < 37; i++) // check for conflicting knobs
             {
                 if (i != menu.editingKnob)
                 {
                     if ((knobs[menu.editingKnob].midiCC == knobs[i].midiCC) && (knobs[menu.editingKnob].midiChannel == knobs[i].midiChannel))
                     {
-                        // menu.ccConflict = true;
-                        oledPrint("CC/CH taken!", 35, 3, 0);
+                        oledPrint("! CC/CH taken !", 25, 3, 0);
                     }
                 }
             }
@@ -131,34 +129,36 @@ void updateMenu()
         if (!menu.editing) // selecting menu item
         {
             // check for input
-            if (!menu.editing)
+            if (maxButton.fell) // navigate
             {
-                if (maxButton.fell) // navigate
-                {
+                if (menu.pos == menu.items - 1)
+                    menu.pos = 0;
+                else
                     menu.pos++;
-                    if (menu.pos >= menu.items - 1)
-                        menu.pos = 0;
-                    drawMenu();
-                }
+                drawMenu();
+            }
 
-                if (minButton.fell) // navigate
-                {
+            if (minButton.fell) // navigate
+            {
+                if (menu.pos == 0)
+                    menu.pos = menu.items - 1;
+                else
                     menu.pos--;
-                    if (menu.pos == 255)
-                        menu.pos = menu.items - 1;
-                    drawMenu();
-                }
+                drawMenu();
+            }
 
-                if (modeButton.fell)
-                {
-                    menu.editing = true;
-                    drawMenu();
-                }
+            if (modeButton.fell)
+            {
+                menu.editing = true;
+                drawMenu();
             }
         }
 
         else // editing menu item
         {
+            bool done;
+            byte s;
+
             switch (menu.pos)
             {
             case 0: // CC editing
@@ -202,57 +202,67 @@ void updateMenu()
                     drawMenu();
                 }
                 break;
+
             case 2: // global Channel editing
-
+                oledPrint("work in progress");
                 break;
+
             case 3: // smoothing editing
+                oledPrint("work in progress");
+                break;
 
-                break;
             case 4: // save controller state
-                oledPrint("select Save Slot", 0, 1, 1);
-                byte saveSlot = 100; // 0-3
-                bool done = false;
-                while (!done)
-                {
-                    inputValues = shiftInUpdate();
-                    updateButtons(millis());
-                    // get save slot
-                    if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[1].fell)
-                    {
-                        for (byte i = 0; i < 4; i++)
-                        {
-                            if (controllerButton[i].fell)
-                            {
-                                saveSlot = i;
-                            }
-                        }
-                        done = true;
-                    }
-                    delay(50); // easy, buoy
-                }
-                if (saveSlot != 100) // validation
-                // save the data
-                {
-                    oledPrint("save slot" + String(saveSlot), 0, 0, 1);
-                    saveConfig(saveSlot);
-                    delay(1000);
-                }
-                break;
-            case 5: // load
-                oledPrint("select Load Slot", 0, 1, 1);
-                byte loadSlot = 100; // 0-3
+                oledPrint("select save slot", 0, 1, 1);
+                s = 100; // 0-3
                 done = false;
                 while (!done)
                 {
                     inputValues = shiftInUpdate();
                     updateButtons(millis());
-                    if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[1].fell)
+                    // get save slot
+                    if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[3].fell)
                     {
                         for (byte i = 0; i < 4; i++)
                         {
                             if (controllerButton[i].fell)
                             {
-                                loadSlot = i;
+                                s = i;
+                            }
+                        }
+                        done = true;
+                    }
+                    if (modeButton.fell)
+                        done = true;
+                    delay(50); // easy, buoy
+                }
+
+                // save the data
+                if (s != 100) // validation
+                {
+                    oled.clear();
+                    oledPrint("saving to slot " + String(s + 1), 20, 0, 3);
+                    saveConfig(s);
+                    delay(500);
+                    oledPrint("done.", 80, 3, 0);
+                    delay(300);
+                }
+                break;
+
+            case 5: // load
+                oledPrint("select load slot", 0, 1, 1);
+                s = 100; // 0-3
+                done = false;
+                while (!done)
+                {
+                    inputValues = shiftInUpdate();
+                    updateButtons(millis());
+                    if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[3].fell)
+                    {
+                        for (byte i = 0; i < 4; i++)
+                        {
+                            if (controllerButton[i].fell)
+                            {
+                                s = i;
                             }
                         }
                         done = true;
@@ -262,27 +272,30 @@ void updateMenu()
                         done = true;
                 }
                 // load data
-                if (loadSlot != 100)
+                if (s != 100) // omit if aborted
                 {
-                    oledPrint("load slot" + String(loadSlot), 0, 0, 1);
-                    // loadConfig(loadSlot);
-                    delay(1000);
+                    oled.clear();
+                    oledPrint("loading from slot " + String(s + 1), 10, 0, 3);
+                    loadConfig(s);
+                    delay(500);
+                    oledPrint("done.", 80, 3, 0);
+                    delay(300);
                 }
                 break;
-            }
+            } // end of switch(editing menu pos)
 
             if (modeButton.fell) // exit condition
             {
                 menu.editing = false;
                 drawMenu();
             }
-        }
-        // menu timeout
-        if (millis() - menu.t0 > MENU_TIMEOUT)
-        {
-            menu.active = false;
-            menu.editing = false;
-            redrawOled = true;
+            // menu timeout
+            if (millis() - menu.t0 > MENU_TIMEOUT)
+            {
+                menu.active = false;
+                menu.editing = false;
+                redrawOled = true;
+            }
         }
     }
 }

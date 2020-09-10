@@ -1,10 +1,9 @@
 #include <Arduino.h>
 
 // this file contains structures for easily reading buttons. provides advanced reading: tapped, held etc...
-
-const int BUTTON_LONG_PRESS_TIME = 500;
-const int BUTTON_TAP_TIME = 300;
-const byte BUTTON_AMT = 4; // buttons outputting midi notes
+#define BUTTON_LONG_PRESS_TIME 500
+#define BUTTON_TAP_TIME 300
+#define BUTTON_AMT 4 // buttons outputting midi notes
 
 struct Button
 {

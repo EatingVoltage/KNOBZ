@@ -1,30 +1,39 @@
 #include <Arduino.h>
 
+void showHeader() // shows cc and channel on top of oled
+{
+    oledPrint("CC: " + String(knobs[activeKnob].midiCC));
+    oledPrint("CH: " + String(knobs[activeKnob].midiChannel), 90, 0, 0);
+}
+
 void showHome()
 {
     oled.clear();
+    showHeader();
     oledPrint("MIN: " + String(knobs[activeKnob].min), 0, 3, 0);
-    oledPrint(" MAX: " + String(knobs[activeKnob].max), 75, 3, 0);
-    oledPrint("CC: " + String(knobs[activeKnob].midiCC) + "          CH: " + String(knobs[activeKnob].midiChannel+1), 0, 0, 0);
-    oledPrint(String(activeKnob), 55, 2, 3);
+    oledPrint("MAX: " + String(knobs[activeKnob].max), 80, 3, 0);
+
+    oledPrint(String(activeKnob), 55, 1, 3);
 }
 
 void showMin()
 {
     oled.clear();
-    oledPrint("MIN: " + String(knobs[activeKnob].min), 0, 2, 1);
-    oledPrint(" MAX: " + String(knobs[activeKnob].max), 75, 3, 0);
-    oledPrint("CC: " + String(knobs[activeKnob].midiCC) + "          CH: " + String(knobs[activeKnob].midiChannel+1), 0, 0, 0);
-    // oledPrint(String(activeKnob), 55, 2, 3);
+    showHeader();
+    oledPrint(String(activeKnob), 55, 0, 3);
+    oledPrint("MIN:" + String(knobs[activeKnob].min), 0, 2, 1);
+    oledPrint("MAX: " + String(knobs[activeKnob].max), 80, 3, 0);
+    oledPrint(String(activeKnob), 55, 0, 3);
 }
 
 void showMax()
 {
     oled.clear();
+    showHeader();
+    oledPrint(String(activeKnob), 55, 0, 3);
     oledPrint("MIN: " + String(knobs[activeKnob].min), 0, 3, 0);
-    oledPrint("   MAX: " + String(knobs[activeKnob].max), 40, 2, 1);
-    oledPrint("CC: " + String(knobs[activeKnob].midiCC) + "          CH: " + String(knobs[activeKnob].midiChannel+1), 0, 0, 0);
-    // oledPrint(String(activeKnob), 55, 2, 3);
+    oledPrint("MAX:" + String(knobs[activeKnob].max), 65, 2, 1);
+    oledPrint(String(activeKnob), 55, 0, 3);
 }
 
 byte oldActiveKnob = 0;
