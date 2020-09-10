@@ -36,7 +36,7 @@ int EEPROM_writeAnything(int ee, const T &value)
     unsigned int i;
 
     for (i = 0; i < sizeof(value); i++)
-        EEPROM.write(ee++, *p++);
+        EEPROM.update(ee++, *p++);
 
     EEPROM.end();
 

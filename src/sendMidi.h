@@ -2,7 +2,7 @@
 
 void sendControllerMidi()
 {
-    for (byte i = 0; i < 37; i++)
+    for (byte i = 0; i < KNOB_AMT; i++)
     {
         if (knobs[i].hasNew)
         {
