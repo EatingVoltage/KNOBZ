@@ -66,7 +66,7 @@ void drawMenu()
         {
         case 0:
             oledPrint("Knob " + String(menu.editingKnob) + " CC: " + String(knobs[menu.editingKnob].midiCC), 0, 1, 1);
-            for (byte i = 0; i < 37; i++)
+            for (byte i = 0; i < KNOB_AMT; i++)
             {
                 if (i != menu.editingKnob)
                 {
@@ -81,7 +81,7 @@ void drawMenu()
             break;
         case 1:
             oledPrint("Knob " + String(menu.editingKnob) + " CH: " + String(knobs[menu.editingKnob].midiChannel), 0, 1, 1);
-            for (byte i = 0; i < 37; i++) // check for conflicting knobs
+            for (byte i = 0; i < KNOB_AMT; i++) // check for conflicting knobs
             {
                 if (i != menu.editingKnob)
                 {

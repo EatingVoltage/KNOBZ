@@ -1,6 +1,5 @@
 todo:
 
--load config at startup and indicate on oled on startup, track last loaded config globally and reload that on startup
 -forward dinmidi to usbmidi
 -add hardware midiout jack presence pin to control out-led
 -add hardware miditru
@@ -19,6 +18,7 @@ untested:
 -forward dinmidi to usbmidi
 
 done:
+-load config at startup and indicate on oled on startup, track last loaded config globally and reload that on startup
 -save config of all knobs
 -add save anim
 -show knob index on min and max homestates

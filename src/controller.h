@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#define KNOB_AMT 37
+
 struct knob_t
 {
     // value
@@ -21,11 +23,11 @@ struct knob_t
     byte midiCC = 0;
 };
 
-knob_t knobs[37];
+knob_t knobs[KNOB_AMT];
 
 void controllerBegin() // set midi config
 {
-    for (byte i = 0; i < 37; i++)
+    for (byte i = 0; i < KNOB_AMT; i++)
     {
         knobs[i].midiChannel = settings.midiChannel;
         knobs[i].midiCC = i;
@@ -43,7 +45,7 @@ byte potsChannel[20] = {9, 8, 6, 7, 25, 24, 22, 23, 5, 4, 3, 2, 1, 0, 21, 20, 19
 void updateKnobs()
 {
     // get values
-    int knobValues[37];           // all input goes through here
+    int knobValues[KNOB_AMT];           // all input goes through here
     for (byte i = 0; i < 12; i++) // faders
     {
         knobValues[i] = mux_in[faderChannel[i]];
@@ -67,7 +69,7 @@ void updateKnobs()
     // Serial.println(knobValues[36]);
 
     // process readings
-    for (byte i = 0; i < 37; i++) // read all knobs
+    for (byte i = 0; i < KNOB_AMT; i++) // read all knobs
     {
         knobs[i].hasNew = false;
 
@@ -139,10 +141,11 @@ void updateKnobs()
 
 void saveConfig(byte slot) // slots 0-3
 {
-    for (byte i = 0; i < 37; i++)
+    EEPROM.update(1023, slot);
+    for (byte i = 0; i < KNOB_AMT; i++)
     {
         knobConfig_t saveState;
-        int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * 37) + (sizeof(knobConfig_t) * i);
+        int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * KNOB_AMT) + (sizeof(knobConfig_t) * i);
         saveState.midiChannel = knobs[i].midiChannel;
         saveState.cc = knobs[i].midiCC;
         saveState.min = knobs[i].min;
@@ -154,11 +157,12 @@ void saveConfig(byte slot) // slots 0-3
 
 void loadConfig(byte slot)
 {
+    EEPROM.update(1023, slot);
     // get data here
 
-    for (byte i = 0; i < 37; i++)
+    for (byte i = 0; i < KNOB_AMT; i++)
     {
-        int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * 37) + (sizeof(knobConfig_t) * i);
+        int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * KNOB_AMT) + (sizeof(knobConfig_t) * i);
         knobConfig_t saveState; // pack of config values for one knob
         // EEPROM.get(addr, saveState);
         EEPROM_readAnything(addr, saveState);

@@ -9,7 +9,7 @@
 
 // neopixel leds
 #include "io/ws2812.h"
-#include <io/indicatorLeds.h> 
+#include <io/indicatorLeds.h>
 
 // lidar
 #include <io/lidar.h>
@@ -46,10 +46,19 @@ bool redrawOled = false; // flag to trigger oled redraw
 #include <sendMidi.h>
 #include <io/animateNeopixel.h>
 
-
 void setup()
 {
+  if (EEPROM.read(1023) > 3) // initialising memory - should only run the first time
+  {
+    EEPROM.write(1023, 0); 
+    for (byte i = 0; i < 4; i++)
+    {
+      saveConfig(i);
+    }
+  }
   // settings = loadSettings();
+  byte slot = EEPROM.read(1023);
+  loadConfig(slot);
   settings.midiChannel = 1;
   // saveSettings();
 
@@ -71,19 +80,28 @@ void setup()
   muxBegin();
 
   Wire.begin();
-  oledBegin(); // uses wire
+  oledBegin();  // uses wire
   lidarBegin(); // uses wire
   controllerBegin();
 
   oledPrint("tinyLiddlFaderBank", 0, 1, 3);
-  delay(500);
-  oledPrint("starting...", 0, 3, 0);
-  
+  delay(300);
+  oledPrint("loading slot " + String(slot + 1), 0, 3, 0);
+  // delay(400);
+  // oledPrint("starting.    ", 0, 3, 0);
+  // delay(200);
+  // oledPrint("starting..   ", 0, 3, 0);
+  delay(600);
+  oledPrint("starting...    ", 0, 3, 0);
+
   // for (byte i = 0; i < 48; i++)
   // {
   //   muxRead();
   //   updateKnobs();
   // }
+
+  delay(300);
+  oledPrint("SG20", 105, 3, 0);
 
   for (byte j = 0; j < 255; j++)
   {
@@ -91,8 +109,6 @@ void setup()
     pixels.show();
     delay(2);
   }
-
-  oledPrint("SG20", 105, 3, 0);
 
   delay(1000);
   MidiUSB.flush();
