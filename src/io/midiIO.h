@@ -31,7 +31,6 @@ void sendMidiCC(byte cc, byte val, byte midiChannel)
 void sendMidiPitchbend(int val, byte midiChannel)
 {
     midiChannel++;
-        tickMidiOutIndicator();
     if (sendMidi)
         MIDI.sendPitchBend(val, midiChannel);
     if (sendSerialDebug)
@@ -41,7 +40,6 @@ void sendMidiPitchbend(int val, byte midiChannel)
 void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
 {
     midiChannel++;
-        tickMidiOutIndicator();
     MIDI.sendNoteOn(pitch, velocity, midiChannel);
     if (sendMidi)
     {
@@ -54,7 +52,6 @@ void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
 void sendMidiNoteOff(byte pitch, byte midiChannel)
 {
     midiChannel++;
-        tickMidiOutIndicator();
     MIDI.sendNoteOff(pitch, 0, midiChannel);
     if (sendMidi)
     {
@@ -66,7 +63,7 @@ void sendMidiNoteOff(byte pitch, byte midiChannel)
 
 void allNotesOff(byte midiChannel)
 {
-    midiChannel;
+    midiChannel++;
     for (byte i = 0; i > 128; i++)
     {
         sendMidiNoteOff(i, midiChannel);

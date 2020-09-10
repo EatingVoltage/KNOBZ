@@ -1,6 +1,7 @@
 todo:
 
 -save config of all knobs
+<<<<<<< HEAD
 -load config at startup and indicate on oled on startup, track last loaded config globally and reload that on startup
 -forward dinmidi to usbmidi
 -add display timeout
@@ -16,7 +17,11 @@ todo:
 -cleanup / reorder menu items to separate knob-specifics from globals 
 
 untested:
+=======
+-load config at startup and indicate on oled on startup
+>>>>>>> master
 -forward usb midi to dinmidi
+-forward dinmidi to usbmidi
 
 done:
 -add save anim
