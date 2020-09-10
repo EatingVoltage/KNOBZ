@@ -56,6 +56,7 @@ void setup()
       saveConfig(i);
     }
   }
+  
   // settings = loadSettings();
   byte slot = EEPROM.read(1023);
   loadConfig(slot);

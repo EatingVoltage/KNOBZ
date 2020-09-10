@@ -33,11 +33,6 @@ void oledPrint(String text, byte col=0, byte row=0, byte style=0)
         oled.set1X();
         break;
 
-    case 2:
-        oled.setFont(font5x7);
-        oled.set2X();
-        break;
-
     case 3:
         oled.setFont(Arial_bold_14);
         oled.set1X();

@@ -1,9 +1,10 @@
 #include <Arduino.h>
 
+#define INDICATOR_DUR 15
+
 struct indicator_t
 {
-    long t0;
-    int dur = 20;
+    unsigned long t0;
     bool active = false;
 };
 
@@ -16,7 +17,7 @@ void updateIndicators()
 {
     if(midiInIndicator.active) // timeout
     {
-        if (millis() - midiInIndicator.t0 > midiInIndicator.dur)
+        if (millis() - midiInIndicator.t0 > INDICATOR_DUR)
         {
             midiInIndicator.active = false;
         }
@@ -24,7 +25,7 @@ void updateIndicators()
     }
     if(midiOutIndicator.active) // timeout
     {
-        if (millis() - midiOutIndicator.t0 > midiOutIndicator.dur)
+        if (millis() - midiOutIndicator.t0 > INDICATOR_DUR)
         {
             midiOutIndicator.active = false;
         }
@@ -32,7 +33,7 @@ void updateIndicators()
     }
     if(USBIndicator.active) // timeout
     {
-        if (millis() - USBIndicator.t0 > USBIndicator.dur)
+        if (millis() - USBIndicator.t0 > INDICATOR_DUR)
         {
             USBIndicator.active = false;
         }

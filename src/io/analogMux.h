@@ -44,20 +44,20 @@ void muxRead()
             digitalWrite(MUX_S[3], LOW);
 
         delay(1);
-        // do 3 readings
+        // do 2 readings
         mux_in[pos] = analogRead(MUX_0_SIG);
         mux_in[pos + 16] = analogRead(MUX_1_SIG);
     }
 }
 
-void muxDebug()
-{
-    for (byte i = 0; i < 32; i++)
-    {
-        Serial.print(i);
-        Serial.print(":");
-        Serial.print(mux_in[i]);
-        Serial.print("\t");
-    }
-    Serial.println();
-}
+// void muxDebug()
+// {
+//     for (byte i = 0; i < 32; i++)
+//     {
+//         Serial.print(i);
+//         Serial.print(":");
+//         Serial.print(mux_in[i]);
+//         Serial.print("\t");
+//     }
+//     Serial.println();
+// }

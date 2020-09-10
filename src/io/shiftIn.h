@@ -2,9 +2,9 @@
 
 //Shift In - reads parallel in serial out 74hc165 Shift registers
 
-int ploadPin = 12; // Load Input
-int dataPin = 5;   // Serial Input
-int clockPin = 6;  // CLOCK Input
+#define P_LOAD_PIN 12 // Load Input
+#define DATA_PIN 5  // Serial Input
+#define CLOCK_PIN 6  // CLOCK Input
 
 #define DATA_WIDTH 8 // one chip, only 7 buttons connected
 unsigned long inputValues, oldInputValues;
@@ -26,17 +26,17 @@ unsigned long shiftInUpdate() // read all data from shift registers
   long bitVal;
   unsigned long bytesVal = 0;
   // digitalWrite(PIN_CE, HIGH);
-  digitalWrite(ploadPin, LOW);
-  delayMicroseconds(5);
-  digitalWrite(ploadPin, HIGH);
+  digitalWrite(P_LOAD_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(P_LOAD_PIN, HIGH);
 
   for (byte i = 0; i < DATA_WIDTH; i++)
   {
-    bitVal = digitalRead(dataPin);
+    bitVal = digitalRead(DATA_PIN);
     bytesVal |= (bitVal << ((DATA_WIDTH - 1) - i));
-    digitalWrite(clockPin, HIGH);
-    delayMicroseconds(5);
-    digitalWrite(clockPin, LOW);
+    digitalWrite(CLOCK_PIN, HIGH);
+    delayMicroseconds(2);
+    digitalWrite(CLOCK_PIN, LOW);
   }
   return (bytesVal);
 }
@@ -45,23 +45,23 @@ unsigned long shiftInUpdate() // read all data from shift registers
 
 void shiftInInit()
 {
-  pinMode(ploadPin, OUTPUT);
-  pinMode(clockPin, OUTPUT);
-  pinMode(dataPin, INPUT);
-  digitalWrite(clockPin, LOW);
-  digitalWrite(ploadPin, HIGH);
+  pinMode(P_LOAD_PIN, OUTPUT);
+  pinMode(CLOCK_PIN, OUTPUT);
+  pinMode(DATA_PIN, INPUT);
+  digitalWrite(CLOCK_PIN, LOW);
+  digitalWrite(P_LOAD_PIN, HIGH);
   inputValues = shiftInUpdate();
   oldInputValues = inputValues;
 }
 
-void shiftInDebug()
-{
-  // printByte();
-  for (byte i = 0; i < DATA_WIDTH; i++)
-  {
-    // Serial.print(buttonReading[i]);
-    Serial.print(shiftInReadBit(i));
-    Serial.print(" ");
-  }
-  Serial.println();
-}
+// void shiftInDebug()
+// {
+//   // printByte();
+//   for (byte i = 0; i < DATA_WIDTH; i++)
+//   {
+//     // Serial.print(buttonReading[i]);
+//     Serial.print(shiftInReadBit(i));
+//     Serial.print(" ");
+//   }
+//   Serial.println();
+// }
