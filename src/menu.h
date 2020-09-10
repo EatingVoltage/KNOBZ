@@ -9,7 +9,6 @@ struct menu_t
     long t0 = 0;
     byte editingKnob;
     byte currentVal = 0; // temp space for numerical menu items
-    // bool ccConflict = false;
 };
 
 menu_t menu;
@@ -19,19 +18,19 @@ void drawMenu()
     menu.t0 = millis(); // reset menu timer on every change
 
     oled.clear();
+    // oledPrint(String(menu.pos), 0, 1, 0);
 
     if (!menu.editing)
     {
         oledPrint("--------MENU--------" + String(menu.pos + 1), 0, 0, 0);
         oledPrint("<-", 0, 3, 0);
         oledPrint("ok", 60, 3, 0);
-        oledPrint("->", 110, 3, 0);
+        oledPrint("->", 105, 3, 0);
 
         switch (menu.pos)
         {
         case 0:
             oledPrint("Edit Knob " + String(menu.editingKnob) + " CC " + String(knobs[menu.editingKnob].midiCC), 0, 1, 1);
-                
             break;
         case 1:
             oledPrint("Edit Knob " + String(menu.editingKnob) + " Channel", 0, 1, 1);
@@ -61,38 +60,16 @@ void drawMenu()
         oledPrint("---------EDIT---------", 0, 0, 0);
         oledPrint("-", 0, 3, 0);
         oledPrint("back", 60, 3, 0);
-        oledPrint("+", 120, 3, 0);
+        oledPrint("+", 105, 3, 0);
 
         switch (menu.pos)
         {
         case 0:
             oledPrint("Knob " + String(menu.editingKnob) + " CC:" + String(knobs[menu.editingKnob].midiCC), 0, 1, 1);
-            for (byte i = 0; i < 37; i++)
-            {
-                if (i != menu.editingKnob)
-                {
-                    if ((knobs[menu.editingKnob].midiCC == knobs[i].midiCC) && (knobs[menu.editingKnob].midiChannel == knobs[i].midiChannel))
-                    {
-                        // menu.ccConflict = true;
-                        oledPrint("CC/CH taken!", 35, 3, 0);
-                    }
-                }
-            }
-
             break;
         case 1:
             oledPrint("Knob " + String(menu.editingKnob) + " CH:" + String(knobs[menu.editingKnob].midiChannel + 1), 0, 1, 1);
-            for (byte i = 0; i < 37; i++)
-            {
-                if (i != menu.editingKnob)
-                {
-                    if ((knobs[menu.editingKnob].midiCC == knobs[i].midiCC) && (knobs[menu.editingKnob].midiChannel == knobs[i].midiChannel))
-                    {
-                        // menu.ccConflict = true;
-                        oledPrint("CC/CH taken!", 35, 3, 0);
-                    }
-                }
-            }
+            // oledPrint("Knob " + String(menu.editingKnob) + " CH:", 0, 1, 1);
             break;
         case 2:
             oledPrint("set all knobs to ", 0, 1, 1);

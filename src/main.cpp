@@ -51,16 +51,28 @@ void setup()
 {
   // MidiUSB.flush();
 
-  // settings = loadSettings();
-  settings.midiChannel = 1;
-  settings.midiDefaultVel = 63;
+  settings = loadSettings();
+  // settings.midiChannel = 1;
+  // settings.midiDefaultVel = 63;
   // saveSettings();
 
   MIDI.begin();
 
   Serial.begin(31250);
+  // while (!Serial)
+  // {
+  // delay(100);
+  // }
+  // Serial.println("starting");
 
   neopixelBegin();
+
+  for (byte i = 0; i < 4; i++) // turn off leds
+  {
+    setPixel(i, 0, 0, 0);
+  }
+
+  pixels.show();
 
   shiftInInit();
   // analogReference(INTERNAL); // for hardware prototypes 0.2 and on
@@ -72,21 +84,27 @@ void setup()
   controllerBegin();
 
   // delay(200);
-  oledPrint("TinyLiddlFaderBank", 0, 1, 3);
+  oledPrint("Fader Knobbins", 10, 1, 3);
   delay(500);
   oledPrint("starting...", 0, 3, 0);
-  // delay(200);
-  
-  for (byte i = 0; i < 48; i++)
+  delay(200);
+  oledPrint("SG20", 100, 3, 0);
+
+  // TEST ZONE
+  // oled.clear();
+  // oledPrint(String(sizeof()), 0, 0, 0);
+
+  //
+
+  byte val = 0;
+  for (byte i = 0; i < 12; i++)
   {
+    // read from knobs a few times
     muxRead();
     updateKnobs();
   }
+  byte h = getHueFromKnobs();
 
-  oledPrint("SG20", 100, 3, 0);
-
-  // fade in neopixels
-  byte h = getHueFromKnobs(); 
   for (byte j = 0; j < 255; j++)
   {
     animateNeopixel(j);
@@ -94,7 +112,7 @@ void setup()
     delay(2);
   }
 
-  delay(200);
+  delay(1000);
   MidiUSB.flush();
   oled.clear();
 }
@@ -114,7 +132,7 @@ void loop()
   inputValues = shiftInUpdate();
   updateButtons(tFrame);
 
-  readLidarSensor(LIDAR_SMOOTHING); // set running average sampling amount - slew rate limiter
+  readLidarSensor(8); // set running average sampling amount - slew rate limiter
 
   // update
   updateKnobs();
@@ -138,5 +156,5 @@ void loop()
 
   // Pause before next pass through loop
   // delay(50);
-  delay(1);
+  delay(5);
 }

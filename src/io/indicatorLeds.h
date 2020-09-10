@@ -3,6 +3,7 @@
 struct indicator_t
 {
     long t0;
+    int dur = 20;
     bool active = false;
 };
 
@@ -15,7 +16,7 @@ void updateIndicators()
 {
     if(midiInIndicator.active) // timeout
     {
-        if (millis() - midiInIndicator.t0 > INDICATOR_DUR)
+        if (millis() - midiInIndicator.t0 > midiInIndicator.dur)
         {
             midiInIndicator.active = false;
         }
@@ -23,7 +24,7 @@ void updateIndicators()
     }
     if(midiOutIndicator.active) // timeout
     {
-        if (millis() - midiOutIndicator.t0 > INDICATOR_DUR)
+        if (millis() - midiOutIndicator.t0 > midiOutIndicator.dur)
         {
             midiOutIndicator.active = false;
         }
@@ -31,7 +32,7 @@ void updateIndicators()
     }
     if(USBIndicator.active) // timeout
     {
-        if (millis() - USBIndicator.t0 > INDICATOR_DUR)
+        if (millis() - USBIndicator.t0 > USBIndicator.dur)
         {
             USBIndicator.active = false;
         }

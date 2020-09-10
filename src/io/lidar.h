@@ -12,11 +12,15 @@ VL53L0X sensor;
 
 void lidarBegin()
 {
+  // Serial.begin(9600);
+
+  // Wire.begin();
   sensor.setTimeout(500);
   if (!sensor.init())
   {
     oled.clear();
-    oledPrint(F("lidar init error."), 0, 0, 1);
+    oledPrint("lidar init error.", 0, 0, 1);
+    // Serial.println("Failed to detect and initialize sensor!");
     while (1)
     {
     }
@@ -30,11 +34,11 @@ long oldSensorReading;
 void readLidarSensor(byte sampleAmt)
 {
   int reading = sensor.readRangeContinuousMillimeters() - 70;
+  // int reading = sensor.readRangeSingleMillimeters() - 70;
   if (reading < 1000 && reading)
     sensorReading = (sensorReading / sampleAmt) * (sampleAmt - 1) + reading / sampleAmt; // running average
   if (sensor.timeoutOccurred())
   {
-    oled.clear();
     oledPrint("LIDAR TIMEOUT ERROR", 0, 0, 1);
     delay(500);
   } // error checking
@@ -49,4 +53,15 @@ void readLidarSensor(byte sampleAmt)
 //     }
 //     Serial.println(res);
 //     Serial.println(sensorReading);
+// }
+
+// void loop()
+// {
+//   readLidarSensor(10); // set running average sampling amount - slew rate limiter
+//   if(abs(oldSensorReading - sensorReading) > 1)
+//   {
+//     oldSensorReading = sensorReading;
+//     debugLidarSensor();
+//   }
+//   delay(10);
 // }
