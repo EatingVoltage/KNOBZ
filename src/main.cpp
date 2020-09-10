@@ -48,6 +48,8 @@ bool redrawOled = false; // flag to trigger oled redraw
 
 void setup()
 {
+  pinMode(PLUG_INDIC_PIN, INPUT); // initialise midi out plug indicator
+  
   if (EEPROM.read(1023) > 3) // initialising memory - should only run the first time
   {
     EEPROM.write(1023, 0); 
@@ -56,7 +58,7 @@ void setup()
       saveConfig(i);
     }
   }
-  
+
   // settings = loadSettings();
   byte slot = EEPROM.read(1023);
   loadConfig(slot);

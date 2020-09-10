@@ -1,7 +1,5 @@
 #include <Arduino.h>
 
-#define KNOB_AMT 37
-
 struct knob_t
 {
     // value
@@ -83,12 +81,12 @@ void updateKnobs()
             activeKnob = i;
             if (minButton.pressed)
             {
-                knobs[i].min = knobs[i].val;
+                knobs[i].min = min(knobs[i].val, 127-MINMAX_MARGIN);
                 redrawOled = true;
             }
             else if (maxButton.pressed)
             {
-                knobs[i].max = knobs[i].val;
+                knobs[i].max = max(knobs[i].val, MINMAX_MARGIN);
                 redrawOled = true;
             }
 
