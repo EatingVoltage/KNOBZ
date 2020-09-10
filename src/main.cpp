@@ -56,7 +56,7 @@ void setup()
 
   MIDI.begin();
 
-  Serial.begin(31250);
+  // Serial.begin(31250);
 
   neopixelBegin();
 
@@ -65,21 +65,19 @@ void setup()
   muxBegin();
 
   Wire.begin();
-  oledBegin();
-  lidarBegin(); // needs wire
+  oledBegin(); // uses wire
+  lidarBegin(); // uses wire
   controllerBegin();
 
-  // delay(200);
   oledPrint("TinyLiddlFaderBank", 0, 1, 3);
   delay(500);
   oledPrint("starting...", 0, 3, 0);
-  // delay(200);
   
-  for (byte i = 0; i < 48; i++)
-  {
-    muxRead();
-    updateKnobs();
-  }
+  // for (byte i = 0; i < 48; i++)
+  // {
+  //   muxRead();
+  //   updateKnobs();
+  // }
 
   oledPrint("SG20", 100, 3, 0);
 

@@ -12,7 +12,7 @@ struct knob_t
 
     // anim
     long t0 = 0;
-    int dur = 0;
+    // int dur = 0;
     byte origin = 0;
     byte target = 0;
 
@@ -79,7 +79,6 @@ void updateKnobs()
             knobs[i].hasNew = true;
             sendMidiCC(knobs[i].midiCC, knobs[i].val, knobs[i].midiChannel);
             activeKnob = i;
-
             if (minButton.pressed)
             {
                 knobs[i].min = knobs[i].val;
@@ -91,10 +90,10 @@ void updateKnobs()
                 redrawOled = true;
             }
 
-            if (tFrame < knobs[i].t0 + knobs[i].dur) // if animating
-            {
-                knobs[i].origin = knobs[i].val;
-            }
+            // if (tFrame < knobs[i].t0 + knobs[i].dur) // if animating
+            // {
+            //     knobs[i].origin = knobs[i].val;
+            // }
         }
     }
 
@@ -113,41 +112,42 @@ void updateKnobs()
     // }
 }
 
-void animateKnob(knob_t &myKnob)
-{
-    byte res = myKnob.target;
-    float perc;
-    if (tFrame < myKnob.t0 + myKnob.dur) // if its animation time
-    {
-        perc = float(tFrame - myKnob.t0) / float(myKnob.dur);
-        res = myKnob.origin + perc * (myKnob.target - myKnob.origin);
+// void animateKnob(knob_t &myKnob)
+// {
+//     byte res = myKnob.target;
+//     float perc;
+//     if (tFrame < myKnob.t0 + myKnob.dur) // if its animation time
+//     {
+//         perc = float(tFrame - myKnob.t0) / float(myKnob.dur);
+//         res = myKnob.origin + perc * (myKnob.target - myKnob.origin);
 
-        if (myKnob.val != res)
-        {
-            myKnob.val = res;
-            myKnob.hasNew = true;
-        }
-    }
-}
+//         if (myKnob.val != res)
+//         {
+//             myKnob.val = res;
+//             myKnob.hasNew = true;
+//         }
+//     }
+// }
 
-void setAnimation(knob_t &myKnob, byte target, int duration)
-{
-    myKnob.t0 = tFrame;
-    myKnob.dur = duration;
-    myKnob.origin = myKnob.val;
-    myKnob.target = target;
-}
+// void setAnimation(knob_t &myKnob, byte target, int duration)
+// {
+//     myKnob.t0 = tFrame;
+//     myKnob.dur = duration;
+//     myKnob.origin = myKnob.val;
+//     myKnob.target = target;
+// }
 
 void saveConfig(byte slot) // slots 0-3
 {
-    knobConfig_t saveState;
     for (byte i = 0; i < 37; i++)
     {
+        knobConfig_t saveState;
         int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * 37) + (sizeof(knobConfig_t) * i);
         saveState.midiChannel = knobs[i].midiChannel;
         saveState.cc = knobs[i].midiCC;
         saveState.min = knobs[i].min;
         saveState.max = knobs[i].max;
+        // EEPROM.put(addr, saveState);
         EEPROM_writeAnything(addr, saveState);
     }
 }
@@ -155,11 +155,12 @@ void saveConfig(byte slot) // slots 0-3
 void loadConfig(byte slot)
 {
     // get data here
-    knobConfig_t saveState; // pack of config values for one knob
 
     for (byte i = 0; i < 37; i++)
     {
         int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * 37) + (sizeof(knobConfig_t) * i);
+        knobConfig_t saveState; // pack of config values for one knob
+        // EEPROM.get(addr, saveState);
         EEPROM_readAnything(addr, saveState);
 
         knobs[i].midiChannel = saveState.midiChannel;
@@ -167,5 +168,5 @@ void loadConfig(byte slot)
         knobs[i].min = saveState.min;
         knobs[i].max = saveState.max;
     }
-    oledPrint("channel: " + saveState.midiChannel);
+    // oledPrint("channel: " + saveState.midiChannel);
 }
