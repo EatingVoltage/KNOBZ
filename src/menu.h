@@ -18,6 +18,7 @@ void drawMenu()
     menu.t0 = millis(); // reset menu timer on every change
 
     oled.clear();
+    // oledPrint(String(menu.pos), 0, 1, 0);
 
     if (!menu.editing) // selecting menu item
     {
@@ -30,7 +31,6 @@ void drawMenu()
         {
         case 0:
             oledPrint("Edit Knob " + String(menu.editingKnob) + " CC " + String(knobs[menu.editingKnob].midiCC), 0, 1, 1);
-
             break;
         case 1:
             oledPrint("Edit Knob " + String(menu.editingKnob) + " Channel", 0, 1, 1);
@@ -60,7 +60,7 @@ void drawMenu()
         oledPrint("---------EDIT---------", 0, 0, 0);
         oledPrint("-", 0, 3, 0);
         oledPrint("back", 60, 3, 0);
-        oledPrint("+", 120, 3, 0);
+        oledPrint("+", 105, 3, 0);
 
         switch (menu.pos)
         {
@@ -80,7 +80,7 @@ void drawMenu()
 
             break;
         case 1:
-            oledPrint("Knob " + String(menu.editingKnob) + " CH: " + String(knobs[menu.editingKnob].midiChannel + 1), 0, 1, 1);
+            oledPrint("Knob " + String(menu.editingKnob) + " CH: " + String(knobs[menu.editingKnob].midiChannel), 0, 1, 1);
             for (byte i = 0; i < 37; i++) // check for conflicting knobs
             {
                 if (i != menu.editingKnob)
@@ -237,7 +237,7 @@ void updateMenu()
                 if (s != 100) // validation
                 {
                     oled.clear();
-                    oledPrint("saving to slot " + String(s + 1), 20, 0, 3);
+                    oledPrint("saving to slot " + String(s + 1), 20, 0, 1);
                     saveConfig(s);
                     delay(500);
                 }
@@ -270,7 +270,7 @@ void updateMenu()
                 if (s != 100) // omit if aborted
                 {
                     oled.clear();
-                    oledPrint("loading from slot " + String(s + 1), 10, 0, 3);
+                    oledPrint("loading slot " + String(s + 1), 30, 0, 3);
                     loadConfig(s);
                     delay(500);
                 }

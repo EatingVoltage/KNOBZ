@@ -60,6 +60,13 @@ void setup()
 
   neopixelBegin();
 
+  for (byte i = 0; i < 4; i++) // turn off leds
+  {
+    setPixel(i, 0, 0, 0);
+  }
+
+  pixels.show();
+
   shiftInInit();
   // analogReference(INTERNAL); // for hardware prototypes 0.2 and on
   muxBegin();
@@ -79,10 +86,6 @@ void setup()
   //   updateKnobs();
   // }
 
-  oledPrint("SG20", 100, 3, 0);
-
-  // fade in neopixels
-  byte h = getHueFromKnobs(); 
   for (byte j = 0; j < 255; j++)
   {
     animateNeopixel(j);
@@ -90,7 +93,9 @@ void setup()
     delay(2);
   }
 
-  delay(200);
+  oledPrint("SG20", 105, 3, 0);
+
+  delay(1000);
   MidiUSB.flush();
   oled.clear();
 }
@@ -110,7 +115,7 @@ void loop()
   inputValues = shiftInUpdate();
   updateButtons(tFrame);
 
-  readLidarSensor(LIDAR_SMOOTHING); // set running average sampling amount - slew rate limiter
+  readLidarSensor(8); // set running average sampling amount - slew rate limiter
 
   // update
   updateKnobs();
@@ -134,5 +139,5 @@ void loop()
 
   // Pause before next pass through loop
   // delay(50);
-  delay(1);
+  delay(5);
 }
