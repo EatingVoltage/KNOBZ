@@ -10,7 +10,11 @@ const byte LED_BRIGHTNESS = 20;
 
 const int LIDAR_UPPER_LIMIT = 400;
 
+const int LIDAR_SMOOTHING = 10;
+
 const int MENU_TIMEOUT = 5000;
+
+const int INDICATOR_DUR = 15; // midi traffic indicator led blink duration ms
 
 struct controllerSettings
 {

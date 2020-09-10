@@ -3,8 +3,10 @@ todo:
 -cc conflict warning
 -save config of all knobs
 -load config at startup and indicate on oled on startup
--forward usb midi to dinmidi
 -forward dinmidi to usbmidi
+
+untested:
+-forward usb midi to dinmidi
 
 done:
 -midi activity led to non blocking

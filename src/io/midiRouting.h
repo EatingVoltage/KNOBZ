@@ -45,7 +45,10 @@ void routeMidiUSBtoUART()
             Serial.print(rx.byte3);
             Serial.println(" ");  
             //send back the received MIDI command
-
+            Serial1.write(rx.header);
+            if(rx.byte1) Serial1.write(rx.byte1);
+            if(rx.byte2) Serial1.write(rx.byte2);
+            if(rx.byte3) Serial1.write(rx.byte3);
             //   Serial.write();
         }
     } while (rx.header != 0);
