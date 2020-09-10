@@ -204,11 +204,9 @@ void updateMenu()
                 break;
 
             case 2: // global Channel editing
-                oledPrint("work in progress");
                 break;
 
             case 3: // smoothing editing
-                oledPrint("work in progress");
                 break;
 
             case 4: // save controller state
@@ -233,7 +231,6 @@ void updateMenu()
                     }
                     if (modeButton.fell)
                         done = true;
-                    delay(50); // easy, buoy
                 }
 
                 // save the data
@@ -243,8 +240,6 @@ void updateMenu()
                     oledPrint("saving to slot " + String(s + 1), 20, 0, 3);
                     saveConfig(s);
                     delay(500);
-                    oledPrint("done.", 80, 3, 0);
-                    delay(300);
                 }
                 break;
 
@@ -278,17 +273,16 @@ void updateMenu()
                     oledPrint("loading from slot " + String(s + 1), 10, 0, 3);
                     loadConfig(s);
                     delay(500);
-                    oledPrint("done.", 80, 3, 0);
-                    delay(300);
                 }
                 break;
             } // end of switch(editing menu pos)
 
-            if (modeButton.fell) // exit condition
+            if (modeButton.fell) // exit condition - back to selection menu
             {
                 menu.editing = false;
                 drawMenu();
             }
+
             // menu timeout
             if (millis() - menu.t0 > MENU_TIMEOUT)
             {
