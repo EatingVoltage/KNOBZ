@@ -1,11 +1,12 @@
 #include <Arduino.h>
 
+#define MENU_ITEMS 7 // number of menu items
+
 struct menu_t
 {
     byte pos = 0;
     bool active = false;
     bool editing = false;
-    byte items = 6; // number of menu items
     long t0 = 0;
     byte editingKnob;
     byte currentVal = 0; // temp space for numerical menu items
@@ -32,22 +33,29 @@ void drawMenu()
         case 0:
             oledPrint("Edit Knob " + String(menu.editingKnob) + " CC " + String(knobs[menu.editingKnob].midiCC), 0, 1, 1);
             break;
+
         case 1:
             oledPrint("Edit Knob " + String(menu.editingKnob) + " Channel", 0, 1, 1);
             break;
+
         case 2:
-            oledPrint("Set global Channel", 0, 1, 1);
+            oledPrint("set all Channels", 0, 1, 1);
             break;
 
         case 3:
-            oledPrint("Knob " + String(menu.editingKnob) + " smoothing", 0, 1, 1);
+            oledPrint("reset all knobs", 0, 1, 1);
             break;
 
-        case 4:
-            oledPrint("Save Config", 0, 1, 1);
+        case 4: 
+            oledPrint("reset all min/max", 0, 1, 1);
             break;
+
         case 5:
-            oledPrint("Load Config", 0, 1, 1);
+            oledPrint("Save Config", 20, 1, 1);
+            break;
+
+        case 6:
+            oledPrint("Load Config", 20, 1, 1);
             break;
 
         default:
@@ -92,19 +100,22 @@ void drawMenu()
                 }
             }
             break;
-        case 2:
-            oledPrint("set all knobs to ", 0, 1, 1);
-            break;
-        case 3:
-            oledPrint("Knobsmooth. :", 0, 1, 1);
-            break;
-        case 4: // save
+        // case 2:
+            // menu.currentVal = 0;
+            // oledPrint("set all channels: " + menu.currentVal, 0, 1, 1);
+            // break;
+        // case 3:
+            // oledPrint("clear all?", 0, 1, 1);
+            // break;
+        // case 4: // 
+            // oledPrint("reset min/max?", 0, 1, 1);
+            // break;
 
-            break;
+        // case 5: // save
+            // break;
 
-        case 5: // load
-
-            break;
+        // case 6: // load
+            // break;
 
         default:
             break;
@@ -131,7 +142,7 @@ void updateMenu()
             // check for input
             if (maxButton.fell) // navigate
             {
-                if (menu.pos == menu.items - 1)
+                if (menu.pos == MENU_ITEMS - 1)
                     menu.pos = 0;
                 else
                     menu.pos++;
@@ -141,7 +152,7 @@ void updateMenu()
             if (minButton.fell) // navigate
             {
                 if (menu.pos == 0)
-                    menu.pos = menu.items - 1;
+                    menu.pos = MENU_ITEMS - 1;
                 else
                     menu.pos--;
                 drawMenu();
@@ -161,7 +172,7 @@ void updateMenu()
 
             switch (menu.pos)
             {
-            case 0: // CC editing
+            case 0: // Knob CC editing
                 if (minButton.fell)
                 {
                     byte x = knobs[menu.editingKnob].midiCC;
@@ -182,7 +193,7 @@ void updateMenu()
                 }
                 break;
 
-            case 1: // Channel editing
+            case 1: // Knob Channel editing
                 if (minButton.fell)
                 {
                     byte x = knobs[menu.editingKnob].midiChannel;
@@ -203,13 +214,16 @@ void updateMenu()
                 }
                 break;
 
-            case 2: // global Channel editing
+            case 2: // set knob channels
                 break;
 
-            case 3: // smoothing editing
+            case 3: // clear all
+                break;
+            
+            case 4: // reset min/max
                 break;
 
-            case 4: // save controller state
+            case 5: // save controller state
                 oledPrint("select save slot", 0, 1, 1);
                 s = 100; // 0-3
                 done = false;
@@ -237,13 +251,13 @@ void updateMenu()
                 if (s != 100) // validation
                 {
                     oled.clear();
-                    oledPrint("saving to slot " + String(s + 1), 20, 0, 1);
+                    oledPrint("saving to slot " + String(s + 1), 0, 1, 1);
                     saveConfig(s);
                     delay(500);
                 }
                 break;
 
-            case 5: // load
+            case 6: // load
                 oledPrint("select load slot", 0, 1, 1);
                 s = 100; // 0-3
                 done = false;
@@ -270,7 +284,7 @@ void updateMenu()
                 if (s != 100) // omit if aborted
                 {
                     oled.clear();
-                    oledPrint("loading slot " + String(s + 1), 30, 0, 3);
+                    oledPrint("loading slot " + String(s + 1), 0, 1, 1);
                     loadConfig(s);
                     delay(500);
                 }
