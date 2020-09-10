@@ -1,10 +1,7 @@
 todo:
 
--save config of all knobs
-<<<<<<< HEAD
 -load config at startup and indicate on oled on startup, track last loaded config globally and reload that on startup
 -forward dinmidi to usbmidi
--add display timeout
 -add hardware midiout jack presence pin to control out-led
 -add hardware miditru
 -reset all min / max routine
@@ -15,15 +12,14 @@ todo:
 -min should only go to 127-margin, max only to margin
 -disable output scaling on min and max editing mode
 -cleanup / reorder menu items to separate knob-specifics from globals 
+-add display timeout
 
 untested:
-=======
--load config at startup and indicate on oled on startup
->>>>>>> master
 -forward usb midi to dinmidi
 -forward dinmidi to usbmidi
 
 done:
+-save config of all knobs
 -add save anim
 -show knob index on min and max homestates
 -cc conflict warning

@@ -4,8 +4,8 @@
 
 // analog in pin definitions
 const int MUX_S[4] = {8, 9, 10, 11};
-const int MUX_0_SIG = A0;
-const int MUX_1_SIG = A1;
+#define MUX_0_SIG A0
+#define MUX_1_SIG A1
 
 int mux_in[32]; // readings
 

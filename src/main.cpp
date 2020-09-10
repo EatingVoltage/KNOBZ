@@ -51,7 +51,6 @@ void setup()
 {
   // settings = loadSettings();
   settings.midiChannel = 1;
-  settings.midiDefaultVel = 63;
   // saveSettings();
 
   MIDI.begin();
@@ -76,7 +75,7 @@ void setup()
   lidarBegin(); // uses wire
   controllerBegin();
 
-  oledPrint("TinyLiddlFaderBank", 0, 1, 3);
+  oledPrint("tinyLiddlFaderBank", 0, 1, 3);
   delay(500);
   oledPrint("starting...", 0, 3, 0);
   
@@ -103,9 +102,6 @@ void setup()
 void loop()
 {
   tFrame = millis();
-
-  // oledPrint(String(tFrame), 0, 0, 5);
-  // Serial.println("ms: "+ String(tFrame));
 
   // get fader & knobs values
   muxRead();
