@@ -15,7 +15,7 @@ indicator_t midiOutIndicator;
 // indicator leds
 void updateIndicators()
 {
-    if(midiInIndicator.active) // timeout
+    if (midiInIndicator.active) // timeout
     {
         if (millis() - midiInIndicator.t0 > INDICATOR_DUR)
         {
@@ -23,7 +23,7 @@ void updateIndicators()
         }
         setPixel(0, 0, 0, 255);
     }
-    if(midiOutIndicator.active) // timeout
+    if (midiOutIndicator.active) // timeout
     {
         if (millis() - midiOutIndicator.t0 > INDICATOR_DUR)
         {
@@ -31,7 +31,7 @@ void updateIndicators()
         }
         setPixel(1, 0, 0, 255);
     }
-    if(USBIndicator.active) // timeout
+    if (USBIndicator.active) // timeout
     {
         if (millis() - USBIndicator.t0 > INDICATOR_DUR)
         {
@@ -50,9 +50,12 @@ void tickMidiInIndicator()
 
 void tickMidiOutIndicator()
 {
-    midiOutIndicator.active = true;
-    midiOutIndicator.t0 = millis();
-    setPixel(1, 0, 0, 255);
+    if (!digitalRead(PLUG_INDIC_PIN))
+    {
+        midiOutIndicator.active = true;
+        midiOutIndicator.t0 = millis();
+        setPixel(1, 0, 0, 255);
+    }
 }
 
 void tickUSBIndicator()

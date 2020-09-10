@@ -3,20 +3,27 @@
 // this file saves and loads the LevelConfig struct to eeprom.
 
 #include <EEPROM.h>
+#define EEPROM_ADDR 0
 
-#define POT_TRSH 15
+#define PLUG_INDIC_PIN 7 // pin number of plug 
 
-#define LED_BRIGHTNESS 20
+#define POT_TRSH 15 // knob threshold. must be high enough to get rid of pot/fader noise.
 
-#define LIDAR_UPPER_LIMIT 400
+#define LED_BRIGHTNESS 20 // ws2812 control var
 
-#define LIDAR_SMOOTHING 10
+#define LIDAR_UPPER_LIMIT 400 // ceiling. higher values are omitted
 
-#define MENU_TIMEOUT 5000
+#define LIDAR_SMOOTHING 10 // sample amount
+
+#define MENU_TIMEOUT 5000 // time for menu to disappear
 
 #define INDICATOR_DUR 15 // midi traffic indicator led blink duration ms
 
-#define MIDI_DEFAULT_VEL 64
+#define MIDI_DEFAULT_VEL 64 // velocity for controller button presses
+
+#define KNOB_AMT 37 // number of knob objects
+
+#define MINMAX_MARGIN 10 // limits min to 127-MINMAX_MARGIN and max to MINMAX_MARGIN
 
 struct controllerSettings
 {
@@ -25,7 +32,6 @@ struct controllerSettings
 
 controllerSettings settings;
 
-#define EEPROM_ADDR 0
 
 // functions to store complex data structures to the eeprom
 

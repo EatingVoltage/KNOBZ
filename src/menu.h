@@ -23,7 +23,7 @@ void drawMenu()
 
     if (!menu.editing) // selecting menu item
     {
-        oledPrint("---------MENU-------" + String(menu.pos), 0, 0, 0);
+        oledPrint("---------MENU--------", 0, 0, 0);
         oledPrint("<-", 0, 3, 0);
         oledPrint("ok", 63, 3, 0);
         oledPrint("->", 115, 3, 0);
