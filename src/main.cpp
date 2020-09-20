@@ -79,7 +79,7 @@ void setup()
   pixels.show();
 
   shiftInInit();
-  // analogReference(INTERNAL); // for hardware prototypes 0.2 and on
+  analogReference(EXTERNAL); // for hardware prototypes 0.2 and on
   muxBegin();
 
   Wire.begin();
