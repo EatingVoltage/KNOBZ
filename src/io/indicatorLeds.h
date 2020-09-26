@@ -30,6 +30,7 @@ void updateIndicators()
             midiOutIndicator.active = false;
         }
         setPixel(1, 0, 0, 255);
+        setPixel(3, 0, 0, 255);
     }
     if (USBIndicator.active) // timeout
     {
@@ -55,6 +56,7 @@ void tickMidiOutIndicator()
         midiOutIndicator.active = true;
         midiOutIndicator.t0 = millis();
         setPixel(1, 0, 0, 255);
+        setPixel(3, 0, 0, 255);
     }
 }
 
