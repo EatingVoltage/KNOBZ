@@ -140,10 +140,13 @@ void loop()
   sendButtonMidi();     // midi notes 0-4
   sendControllerMidi(); // send
   forwardMidi();
+  routeMidiUSBtoUART();
 
   // write to Leds
   animateNeopixel();
-  updateIndicators();
+  midiInIndicator.update();
+  midiOutIndicator.update();
+  USBIndicator.update();
   pixels.show();
 
   // write to oled
