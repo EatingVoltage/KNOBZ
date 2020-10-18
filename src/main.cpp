@@ -67,7 +67,7 @@ void setup()
 
   MIDI.begin();
 
-  // Serial.begin(31250);
+  Serial.begin(31250);
 
   neopixelBegin();
 
@@ -144,7 +144,7 @@ void loop()
   forwardUARTMidi();
 
   sendButtonMidi();     // midi notes 0-4
-  sendControllerMidi(); // send
+  sendControllerMidi(); // send ccs
 
   // write to Leds
   animateNeopixel();
@@ -159,5 +159,5 @@ void loop()
 
   // Pause before next pass through loop
   // delay(50);
-  delay(5);
+  // delay(5);
 }

@@ -1,20 +1,5 @@
 #include <Arduino.h>
 
-void routeMidiUARTtoUSB()
-{
-
-    // midiEventPacket_t msg;
-    // msg.byte1 = MIDI.getData1();
-    // msg.byte2 = MIDI.getData2();
-    // msg.byte3 = 0;
-    // msg.header = MIDI.getStatus(MIDI.getType(), MIDI.getChannel());
-
-    // MidiUSB.sendMIDI(msg);
-    // MidiUSB.flush();
-
-    // USBIndicator.tick();
-}
-
 void forwardMidiUSBtoUART()
 {
   while (USBMIDI.available())

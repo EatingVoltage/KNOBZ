@@ -1,18 +1,17 @@
 todo:
 
+-add display timeout
+
+untested:
+
+done:
 -forward dinmidi to usbmidi
 -add hardware midiout jack presence pin to control out-led
 -add hardware miditru
 -disable output scaling on min and max editing mode
--add display timeout
--move some settings from config to global settings (can be saved on slots then)
 -move global settings to save slots
-
-untested:
 -forward usb midi to dinmidi
 -forward dinmidi to usbmidi
-
-done:
 -min should only go to 127-margin, max only to margin
 -cleanup / reorder menu items to separate knob-specifics from globals 
 -reset all min / max routine

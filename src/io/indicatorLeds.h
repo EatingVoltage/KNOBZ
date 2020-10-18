@@ -42,4 +42,5 @@ IndicatorLed_c midiOutIndicator(1);
 void tickMidiOutIndicator()
 {
     if(!digitalRead(PLUG_INDIC_PIN)) midiOutIndicator.tick();
+    Serial.println(digitalRead(PLUG_INDIC_PIN));
 }
