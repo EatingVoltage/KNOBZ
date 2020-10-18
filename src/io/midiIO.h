@@ -5,8 +5,8 @@
 // const bool sendSerialDebug = true;
 // const bool sendMidi = false;
 
-const bool sendSerialDebug = false;
-const bool sendMidi = true;
+// const bool sendSerialDebug = false;
+#define sendMidi 1
 
 void sendMidiCC(byte cc, byte val, byte midiChannel)
 {
@@ -14,18 +14,18 @@ void sendMidiCC(byte cc, byte val, byte midiChannel)
     // setPixel(1, 0, 0, 255); // set indicator leds
     // setPixel(2, 0, 0, 255);
     // pixels.show();
-    tickMidiOutIndicator();
+    midiOutIndicator.tick();
     // delay(10);
 
     MIDI.sendControlChange(cc, val, midiChannel);
     if (sendMidi)
     {
-        tickUSBIndicator();
+        USBIndicator.tick();
         usbMidiControlChange(midiChannel, cc, val);
         MidiUSB.flush();
     }
-    if (sendSerialDebug)
-        Serial.println("CC" + String(cc) + ": " + String(val) + " CH:" + String(midiChannel));
+    // if (sendSerialDebug)
+    //     Serial.println("CC" + String(cc) + ": " + String(val) + " CH:" + String(midiChannel));
 }
 
 void sendMidiPitchbend(int val, byte midiChannel)
@@ -33,8 +33,8 @@ void sendMidiPitchbend(int val, byte midiChannel)
     midiChannel++;
     if (sendMidi)
         MIDI.sendPitchBend(val, midiChannel);
-    if (sendSerialDebug)
-        Serial.println("Pitchbend: " + String(val));
+    // if (sendSerialDebug)
+    //     Serial.println("Pitchbend: " + String(val));
 }
 
 void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
@@ -45,8 +45,8 @@ void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
     {
         usbMidiNoteOn(midiChannel, pitch, velocity);
     }
-    if (sendSerialDebug)
-        Serial.println("Note on " + String(pitch));
+    // if (sendSerialDebug)
+    //     Serial.println("Note on " + String(pitch));
 }
 
 void sendMidiNoteOff(byte pitch, byte midiChannel)
@@ -57,17 +57,6 @@ void sendMidiNoteOff(byte pitch, byte midiChannel)
     {
         usbMidiNoteOff(midiChannel, pitch, 0);
     }
-    if (sendSerialDebug)
-        Serial.println("Note off " + String(pitch));
-}
-
-void allNotesOff(byte midiChannel)
-{
-    midiChannel++;
-    for (byte i = 0; i > 128; i++)
-    {
-        sendMidiNoteOff(i, midiChannel);
-        if (sendMidi)
-            usbMidiNoteOff(midiChannel, i, 0);
-    }
+    // if (sendSerialDebug)
+    //     Serial.println("Note off " + String(pitch));
 }
