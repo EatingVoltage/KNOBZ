@@ -34,19 +34,3 @@ void sendButtonMidi()
     }
 }
 
-void forwardMidi()
-{
-    if (Serial1.available()) // very crude midi forwarding
-    {
-        while (Serial1.available())
-        {
-            // if midi tru enabled
-            Serial1.write(Serial1.read());
-            // write to usb midi
-        }
-        setPixel(0, 0, 0, 255);
-        pixels.show();
-    }
-    // routeMidiUARTtoUSB();
-    routeMidiUSBtoUART();
-}

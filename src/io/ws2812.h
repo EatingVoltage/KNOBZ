@@ -12,12 +12,9 @@ void neopixelBegin()
   pixels.setBrightness(LED_BRIGHTNESS);
 }
 
-void setPixel(byte index, byte h, byte s, byte v)
+void setPixelHsv(byte index, byte h, byte s, byte v)
 { // hsv to rgb converter
-  // this is the algorithm to convert from RGB to HSV
-  byte red;
-  byte green;
-  byte blue;
+  byte red, green, blue;
 
   h = (h * 192) / 256;           // 0..191
   unsigned int i = h / 32;       // We want a value of 0 thru 5

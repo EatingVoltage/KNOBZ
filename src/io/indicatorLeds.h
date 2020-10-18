@@ -23,14 +23,14 @@ public:
             {
                 active = false;
             }
-            setPixel(index, 0, 0, 255);
+            setPixelHsv(index, 0, 0, 255);
         }
     }
     void tick()
     {
         active = true;
         t0 = millis();
-        setPixel(index, 0, 0, 255);
+        setPixelHsv(index, 0, 0, 255);
     }
     // IndicatorLed_c(byte _index);
 };
@@ -38,3 +38,8 @@ public:
 IndicatorLed_c midiInIndicator(0);
 IndicatorLed_c USBIndicator(2);
 IndicatorLed_c midiOutIndicator(1);
+
+void tickMidiOutIndicator()
+{
+    if(!digitalRead(PLUG_INDIC_PIN)) midiOutIndicator.tick();
+}

@@ -49,10 +49,10 @@ bool redrawOled = false; // flag to trigger oled redraw
 void setup()
 {
   pinMode(PLUG_INDIC_PIN, INPUT); // initialise midi out plug indicator
-  
+
   if (EEPROM.read(1023) > 3) // initialising memory - should only run the first time
   {
-    EEPROM.write(1023, 0); 
+    EEPROM.write(1023, 0);
     for (byte i = 0; i < 4; i++)
     {
       saveConfig(i);
@@ -73,7 +73,7 @@ void setup()
 
   for (byte i = 0; i < 4; i++) // turn off leds
   {
-    setPixel(i, 0, 0, 0);
+    setPixelHsv(i, 0, 0, 0);
   }
 
   pixels.show();
@@ -114,7 +114,7 @@ void setup()
   }
 
   delay(1000);
-  MidiUSB.flush();
+  // MidiUSB.flush();
   oled.clear();
 }
 
@@ -137,10 +137,14 @@ void loop()
   updateMenu();
 
   // output midi
+  USBMIDI.poll(); // required to call in loop
+
+  // forward midi
+  forwardMidiUSBtoUART();
+  forwardUARTMidi();
+
   sendButtonMidi();     // midi notes 0-4
   sendControllerMidi(); // send
-  forwardMidi();
-  routeMidiUSBtoUART();
 
   // write to Leds
   animateNeopixel();
@@ -152,8 +156,6 @@ void loop()
   // write to oled
   if (!menu.active) // menu is drawn by itself, so only draw homescreen when not in menu
     drawHome();
-
-  MidiUSB.flush(); // send usb midi - clear buffer needed for stable operation
 
   // Pause before next pass through loop
   // delay(50);
