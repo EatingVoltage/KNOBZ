@@ -1,62 +1,47 @@
 #include <Arduino.h>
 
-// activate midi / Serial debug report of midi send events
-
-// const bool sendSerialDebug = true;
-// const bool sendMidi = false;
-
-// const bool sendSerialDebug = false;
-#define sendMidi 1
+#define sendMidi 1 // activates usb midi sending
 
 void sendMidiCC(byte cc, byte val, byte midiChannel)
 {
-    midiChannel++;
-    // setPixel(1, 0, 0, 255); // set indicator leds
-    // setPixel(2, 0, 0, 255);
-    // pixels.show();
     midiOutIndicator.tick();
-    // delay(10);
-
     MIDI.sendControlChange(cc, val, midiChannel);
     if (sendMidi)
     {
         USBIndicator.tick();
-        usbMidiControlChange(midiChannel, cc, val);
+        usbMidiControlChange(midiChannel+1, cc, val);
         MidiUSB.flush();
     }
     // if (sendSerialDebug)
     //     Serial.println("CC" + String(cc) + ": " + String(val) + " CH:" + String(midiChannel));
 }
 
-void sendMidiPitchbend(int val, byte midiChannel)
-{
-    midiChannel++;
-    if (sendMidi)
-        MIDI.sendPitchBend(val, midiChannel);
-    // if (sendSerialDebug)
-    //     Serial.println("Pitchbend: " + String(val));
-}
+// void sendMidiPitchbend(int val, byte midiChannel)
+// {
+//     if (sendMidi)
+//         MIDI.sendPitchBend(val, midiChannel+1);
+//     // if (sendSerialDebug)
+//     //     Serial.println("Pitchbend: " + String(val));
+// }
 
 void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
 {
-    midiChannel++;
-    MIDI.sendNoteOn(pitch, velocity, midiChannel);
+    MIDI.sendNoteOn(pitch, velocity, midiChannel+1);
     if (sendMidi)
     {
-        usbMidiNoteOn(midiChannel, pitch, velocity);
+        usbMidiNoteOn(midiChannel+1, pitch, velocity);
     }
     // if (sendSerialDebug)
     //     Serial.println("Note on " + String(pitch));
 }
 
-void sendMidiNoteOff(byte pitch, byte midiChannel)
-{
-    midiChannel++;
-    MIDI.sendNoteOff(pitch, 0, midiChannel);
-    if (sendMidi)
-    {
-        usbMidiNoteOff(midiChannel, pitch, 0);
-    }
-    // if (sendSerialDebug)
-    //     Serial.println("Note off " + String(pitch));
-}
+// void sendMidiNoteOff(byte pitch, byte midiChannel)
+// {
+//     MIDI.sendNoteOff(pitch, 0, midiChannel+1);
+//     if (sendMidi)
+//     {
+//         usbMidiNoteOff(midiChannel+1, pitch, 0);
+//     }
+//     // if (sendSerialDebug)
+//     //     Serial.println("Note off " + String(pitch));
+// }

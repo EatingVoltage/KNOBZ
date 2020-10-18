@@ -25,22 +25,23 @@ void oledPrint(String text, byte col=0, byte row=0, byte style=0)
     {
     case 0:
         oled.setFont(font5x7);
-        oled.set1X();
+        // oled.set1X();
         break;
 
     case 1:
         oled.setFont(ZevvPeep8x16);
-        oled.set1X();
+        // oled.set1X();
         break;
 
     case 3:
         oled.setFont(Arial_bold_14);
-        oled.set1X();
+        // oled.set1X();
         break;
 
     default:
         break;
     }
+    oled.set1X();
     oled.setCursor(col, row);
     oled.print(text);
 }

@@ -70,7 +70,7 @@ void updateButtons(long tFrame)
     updateButton(controllerButton[2], shiftInReadBit(2), tFrame);
     updateButton(controllerButton[3], shiftInReadBit(3), tFrame);
 
-    // debugging stuff
+    // debugging
 
     // Serial.print("min button ");
     // Serial.println(minButton.pressed);
