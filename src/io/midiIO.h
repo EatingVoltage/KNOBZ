@@ -4,13 +4,14 @@
 
 void sendMidiCC(byte cc, byte val, byte midiChannel)
 {
-    midiOutIndicator.tick();
+    // midiOutIndicator.tick();
+    tickMidiOutIndicator(); // using wrapper function instead of direct method to implement plug indicator logic
     MIDI.sendControlChange(cc, val, midiChannel);
     if (sendMidi)
     {
         USBIndicator.tick();
         usbMidiControlChange(midiChannel+1, cc, val);
-        MidiUSB.flush();
+        // MidiUSB.flush();
     }
     // if (sendSerialDebug)
     //     Serial.println("CC" + String(cc) + ": " + String(val) + " CH:" + String(midiChannel));
@@ -26,6 +27,7 @@ void sendMidiCC(byte cc, byte val, byte midiChannel)
 
 void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
 {
+    tickMidiOutIndicator(); // using wrapper function instead of direct method to implement plug indicator logic
     MIDI.sendNoteOn(pitch, velocity, midiChannel+1);
     if (sendMidi)
     {

@@ -59,7 +59,6 @@ void updateKnobs()
     knobValues[35] = 1023 - analogRead(A5); //
 
     // air knob - lidar sensor
-
     int x = constrain(sensorReading, 0, LIDAR_UPPER_LIMIT);
     // Serial.println(knobValues[36]);
     knobValues[36] = map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0);
@@ -77,23 +76,20 @@ void updateKnobs()
             knobs[i].readBuf = reading;
             knobs[i].val = map(knobs[i].readBuf, 0, 1023, 127, 0);
             knobs[i].hasNew = true;
-            sendMidiCC(knobs[i].midiCC, knobs[i].val, knobs[i].midiChannel);
             activeKnob = i;
             if (minButton.pressed)
             {
                 knobs[i].min = min(knobs[i].val, 127-MINMAX_MARGIN);
                 redrawOled = true;
+                knobs[i].val = knobs[i].min;
             }
             else if (maxButton.pressed)
             {
                 knobs[i].max = max(knobs[i].val, MINMAX_MARGIN);
                 redrawOled = true;
+                knobs[i].val = knobs[i].max;
             }
-
-            // if (tFrame < knobs[i].t0 + knobs[i].dur) // if animating
-            // {
-            //     knobs[i].origin = knobs[i].val;
-            // }
+            sendMidiCC(knobs[i].midiCC, knobs[i].val, knobs[i].midiChannel);
         }
     }
 

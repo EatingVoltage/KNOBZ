@@ -243,6 +243,9 @@ public:
     inline void turnThruOff();
     inline void setThruFilterMode(Thru::Mode inThruFilterMode);
 
+    inline StatusByte getStatus(MidiType inType,
+                                Channel inChannel) const;
+
 private:
     void thruFilter(byte inChannel);
 
@@ -287,8 +290,6 @@ private:
     int8_t          mLastError;
 
 private:
-    inline StatusByte getStatus(MidiType inType,
-                                Channel inChannel) const;
 };
 
 // -----------------------------------------------------------------------------

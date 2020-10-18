@@ -2,34 +2,40 @@
 
 void routeMidiUARTtoUSB()
 {
-    // MidiType type = MIDI.getType();
-    // Serial.println(type);
-    //     inline MidiType getType() const;
-    // inline Channel  getChannel() const;
-    // inline DataByte getData1() const;
-    // inline DataByte getData2() const;
-    // while (Serial1.available())
-    // {
-    //     Serial.print(Serial1.read());
-    //     tickUSBIndicator();
-    // }
+
+    // midiEventPacket_t msg;
+    // msg.byte1 = MIDI.getData1();
+    // msg.byte2 = MIDI.getData2();
+    // msg.byte3 = 0;
+    // msg.header = MIDI.getStatus(MIDI.getType(), MIDI.getChannel());
+
+    // MidiUSB.sendMIDI(msg);
+    // MidiUSB.flush();
+
+    // USBIndicator.tick();
 }
 
-void routeMidiUSBtoUART()
+void forwardMidiUSBtoUART()
 {
-    midiEventPacket_t rx;
+  while (USBMIDI.available())
+  {
+    Serial1.write(USBMIDI.read());
+    midiOutIndicator.tick();
+    USBIndicator.tick();
+  }
+  Serial1.flush();
+}
 
-    do
-    {
-        rx = MidiUSB.read();
-        if (rx.header != 0)
-        {
-            //send back the received MIDI command
+void forwardUARTMidi()
+{
+  while (Serial1.available())
+  {
+    byte msg = Serial1.read();
+    USBMIDI.write(msg);
+    Serial1.write(msg);
+    midiInIndicator.tick();
+    USBIndicator.tick();
 
-              Serial1.write(rx.header);
-              if(rx.byte1) Serial1.write(rx.byte1);
-              if(rx.byte2) Serial1.write(rx.byte2);
-              if(rx.byte3) Serial1.write(rx.byte3);
-        }
-    } while (rx.header != 0);
+  }
+  USBMIDI.flush();
 }

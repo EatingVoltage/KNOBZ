@@ -19,8 +19,8 @@ void animateNeopixel(byte val=255)
 {
     byte hue = getHueFromKnobs();
 
-    setPixel(0, hue, 255, val);
-    setPixel(3, (hue + 10) % 255, 255, val);
-    setPixel(2, (hue + 30) % 255, 255, val);
-    setPixel(1, (hue + 40) % 255, 255, val);
+    setPixelHsv(0, hue, 255, val);
+    setPixelHsv(3, (hue + 10) % 255, 255, val);
+    setPixelHsv(2, (hue + 30) % 255, 255, val);
+    setPixelHsv(1, (hue + 40) % 255, 255, val);
 }
