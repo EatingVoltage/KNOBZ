@@ -24,9 +24,10 @@ void drawMenu()
     if (!menu.editing) // selecting menu item
     {
         oledPrint("---------MENU--------", 0, 0, 0);
-        oledPrint("<-", 0, 3, 0);
-        oledPrint("ok", 63, 3, 0);
-        oledPrint("->", 115, 3, 0);
+        oledPrint("<-       ok       ->", 0, 3, 0);
+        // oledPrint("<-", 0, 3, 0);
+        // oledPrint("ok", 63, 3, 0);
+        // oledPrint("->", 115, 3, 0);
 
         switch (menu.pos)
         {

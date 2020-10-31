@@ -114,7 +114,6 @@ void setup()
   }
 
   delay(1000);
-  // MidiUSB.flush();
   oled.clear();
 }
 

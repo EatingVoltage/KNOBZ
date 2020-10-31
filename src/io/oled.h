@@ -16,6 +16,7 @@ SSD1306AsciiAvrI2c oled;
 
 void oledBegin()
 {
+    // TODO: try define guard for wire.begin()
     oled.begin(&Adafruit128x32, SSD1306_I2C_ADDRESS);
 }
 
@@ -32,6 +33,8 @@ void oledPrint(String text, byte col=0, byte row=0, byte style=0)
         oled.setFont(ZevvPeep8x16);
         // oled.set1X();
         break;
+
+// TODO case 2
 
     case 3:
         oled.setFont(Arial_bold_14);
