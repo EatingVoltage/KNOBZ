@@ -11,10 +11,10 @@ struct knob_t
     byte max = 127;
 
     // anim
-    long t0 = 0;
+    // long t0 = 0;
     // int dur = 0;
-    byte origin = 0;
-    byte target = 0;
+    // byte origin = 0;
+    // byte target = 0;
 
     // midi
     byte midiChannel = 0;
@@ -23,36 +23,47 @@ struct knob_t
 
 knob_t knobs[KNOB_AMT];
 
-void controllerBegin() // set midi config
-{
-    for (byte i = 0; i < KNOB_AMT; i++)
-    {
-        knobs[i].midiChannel = settings.midiChannel;
-        knobs[i].midiCC = i;
-    }
-    // Serial.println(sizeof(knobs));
-    // read from eeprom here
-}
-
 byte activeKnob = 0;
 
 // mappings
-byte faderChannel[12] = {15, 14, 13, 12, 11, 10, 31, 30, 29, 28, 27, 26};
-byte potsChannel[20] = {9, 8, 6, 7, 25, 24, 22, 23, 5, 4, 3, 2, 1, 0, 21, 20, 19, 18, 17, 16};
+// byte faderChannel[12] = {15, 14, 13, 12, 11, 10, 31, 30, 29, 28, 27, 26};
+// byte potsChannel[20] = {9, 8, 6, 7, 25, 24, 22, 23, 5, 4, 3, 2, 1, 0, 21, 20, 19, 18, 17, 16};
 
 void updateKnobs()
 {
     // get values
-    int knobValues[KNOB_AMT];           // all input goes through here
-    for (byte i = 0; i < 12; i++) // faders
+    int knobValues[KNOB_AMT]; // all input goes through here
+    // for (byte i = 0; i < KNOB_AMT; i++)
+    // {
+    //     knobValues[i] = 0;
+    // }
+
+    // for (byte i = 0; i < 6; i++) // faders
+    // {
+    //     knobValues[i] = mux_in[faderChannel[i]];
+    // }
+    // for (byte i = 0; i < 20; i++) // muxed knobs
+    // {
+    //     knobValues[i + 12] = 1023 - mux_in[potsChannel[i]]; //inverted
+    // }
+
+    // multiplexed inputs
+    for (byte i = 0; i < 32; i++)
     {
-        knobValues[i] = mux_in[faderChannel[i]];
+        int x = mux_in[i];
+        knobValues[i] = x;
     }
-    for (byte i = 0; i < 20; i++) // muxed knobs
-    {
-        knobValues[i + 12] = 1023 - mux_in[potsChannel[i]]; //inverted
-    }
-    // direct knobs
+
+    // for (byte i = 0; i < 32; i++)
+    // {
+    //     Serial.print(i);
+    //     Serial.print(":");
+    //     Serial.print(knobValues[i]);
+    //     Serial.print("\t");
+    // }
+    // Serial.println();
+
+    // direct pin inputs
     knobValues[32] = 1023 - analogRead(A2); // inverted
     knobValues[33] = 1023 - analogRead(A3); //
     knobValues[34] = 1023 - analogRead(A4); //
@@ -60,10 +71,21 @@ void updateKnobs()
 
     // air knob - lidar sensor
     int x = constrain(sensorReading, 0, LIDAR_UPPER_LIMIT);
-    // Serial.println(knobValues[36]);
+    // knobValues[36] = 0;
     knobValues[36] = map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0);
     // debugLidarSensor();
     // Serial.println(knobValues[36]);
+
+    // for (byte i = 0; i < 37; i++)
+    // {
+    //     // if (knobValues[i] > 1023)
+    //     // {
+    //         // Serial.print(i + ": " + (knobValues[i]));
+    //         // Serial.println("biiiig: " + String(i) + " " + String(knobValues[i]));
+    //         // delay(200);
+    //     // }
+    // }
+    // Serial.println();
 
     // process readings
     for (byte i = 0; i < KNOB_AMT; i++) // read all knobs
@@ -74,36 +96,39 @@ void updateKnobs()
         if (abs(reading - knobs[i].readBuf) > POT_TRSH) // if a pot was moved
         {
             knobs[i].readBuf = reading;
-            knobs[i].val = map(knobs[i].readBuf, 0, 1023, 127, 0);
+            int x = map(reading, 0, 1023, 127, 0);
+            knobs[i].val = x;
             knobs[i].hasNew = true;
             activeKnob = i;
+
+            // update oled if knob was moved
             if (minButton.pressed)
             {
-                knobs[i].min = min(knobs[i].val, 127-MINMAX_MARGIN);
+                knobs[i].min = min(knobs[i].val, 127 - MINMAX_MARGIN);
                 redrawOled = true;
-                knobs[i].val = knobs[i].min;
+                knobs[i].val = knobs[i].min; // to think about. scaling does not match like this
             }
             else if (maxButton.pressed)
             {
                 knobs[i].max = max(knobs[i].val, MINMAX_MARGIN);
                 redrawOled = true;
-                knobs[i].val = knobs[i].max;
+                knobs[i].val = knobs[i].max; // to think about. scaling does not match like this
             }
+
             sendMidiCC(knobs[i].midiCC, knobs[i].val, knobs[i].midiChannel);
         }
     }
 
     // debugging
-    // if (knobs[36].hasNew)
-    // Serial.println(knobs[36].val);
     // for (byte i = 0; i < 12; i++)
     // {
-    //     if (faders[i].hasNew)
+    //     if (knobs[i].hasNew)
     //     {
-    //         Serial.print("fader ");
+    //         Serial.print("knob ");
     //         Serial.print(i);
     //         Serial.print(" has new ");
-    //         Serial.println(faders[i].val);
+    //         Serial.println(knobs[i].val);
+    //         // delay(300);
     //     }
     // }
 }
@@ -151,7 +176,7 @@ void saveConfig(byte slot) // slots 0-3
 
 void loadConfig(byte slot)
 {
-    EEPROM.update(1023, slot);
+    EEPROM.update(1023, slot); // saving last loaded slot number for startup loading recent preset
     // get data here
 
     for (byte i = 0; i < KNOB_AMT; i++)
@@ -167,4 +192,9 @@ void loadConfig(byte slot)
         knobs[i].max = saveState.max;
     }
     // oledPrint("channel: " + saveState.midiChannel);
+}
+
+void controllerBegin() // set midi config
+{
+    loadConfig(EEPROM.read(1023)); // loading recent preset slot
 }

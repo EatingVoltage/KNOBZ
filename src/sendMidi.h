@@ -21,7 +21,7 @@ void sendButtonMidi()
             if (!menu.active)
             {
                 sendMidiNoteOn(i, MIDI_DEFAULT_VEL, settings.midiChannel);
-                delay(1);
+                delay(1); // to test. maybe can reduce time here
                 sendMidiNoteOn(i, 0, settings.midiChannel);
             }
             else 

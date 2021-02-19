@@ -14,15 +14,7 @@ void lidarBegin()
 {
   // Wire.begin();
   sensor.setTimeout(500);
-  if (!sensor.init())
-  {
-    // oled.clear();
-    // oledPrint("lidar init error.", 0, 0, 1);
-    // Serial.println("Failed to detect and initialize sensor!");
-    while (1)
-    {
-    }
-  }
+  sensor.init();
   sensor.startContinuous();
 }
 
@@ -31,13 +23,15 @@ long oldSensorReading;
 
 void readLidarSensor(byte sampleAmt)
 {
-  int reading = sensor.readRangeContinuousMillimeters() - 70;
-  // int reading = sensor.readRangeSingleMillimeters() - 70;
-  if (reading < 1000 && reading)
-    sensorReading = (sensorReading / sampleAmt) * (sampleAmt - 1) + reading / sampleAmt; // running average
-  // if (sensor.timeoutOccurred())
-  // {
+  if (!shiftInReadBit(7))
+  {
+    int reading = sensor.readRangeContinuousMillimeters() - 70;
+    if (reading < 1000 && reading)
+      sensorReading = (sensorReading / sampleAmt) * (sampleAmt - 1) + reading / sampleAmt; // running average
+    // if (sensor.timeoutOccurred())
+    // {
     // oledPrint("LIDAR TIMEOUT ERROR", 0, 0, 1);
     // delay(500);
-  // } // error checking
+    // } // error checking
+  }
 }

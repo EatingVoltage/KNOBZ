@@ -3,22 +3,15 @@
 //Shift In - reads parallel in serial out 74hc165 Shift registers
 
 #define P_LOAD_PIN 12 // Load output
-#define DATA_PIN 5  // Serial Input
-#define CLOCK_PIN 6  // CLOCK output
+#define DATA_PIN 5    // Serial Input
+#define CLOCK_PIN 6   // CLOCK output
 
 #define DATA_WIDTH 8 // one chip, only 7 buttons connected
 unsigned long inputValues, oldInputValues;
 
 bool shiftInReadBit(byte index) // get bool from inputValues
 {
-  bool res;
-  if (index < DATA_WIDTH)
-  {
-    res = inputValues >> index & 1;
-    return res;
-  }
-  // else
-  //   Serial.println("invalid index");
+  return inputValues >> index & 1;
 }
 
 unsigned long shiftInUpdate() // read all data from shift registers
