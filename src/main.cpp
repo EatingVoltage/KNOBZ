@@ -9,14 +9,14 @@
 
 // neopixel leds
 #include "io/ws2812.h"
-#include <io/indicatorLeds.h>
-
-// lidar
-#include <io/lidar.h>
+#include "io/indicatorLeds.h"
 
 //Shift In - reads parallel in serial out 74hc165 Shift registers
 #include "io/shiftIn.h"
 #include <io/button.h>
+
+// lidar
+#include <io/lidar.h>
 
 // Analog In - read parallel analog values from the pots
 #include "io/analogMux.h"
@@ -36,6 +36,32 @@ unsigned long tFrame = 0;
 
 bool redrawOled = false; // flag to trigger oled redraw
 
+void updateMidi() // read and forward usb and din midi
+{
+  // output midi
+  USBMIDI.poll(); // required to call in loop
+
+  // forward midi
+  forwardMidiUSBtoUART();
+  forwardUARTMidi();
+}
+
+void myDelay(int dur) // delay without blocking midi forwarding
+{
+  long t0 = millis();
+  while (millis() - t0 < dur)
+  {
+    // update here everything that needs updating while delay
+
+    // output midi
+    USBMIDI.poll(); // required to call in loop
+
+    // forward midi
+    forwardMidiUSBtoUART();
+    forwardUARTMidi();
+  }
+}
+
 // knobs logic
 #include <controller.h>
 
@@ -52,15 +78,23 @@ void setup()
 
   if (EEPROM.read(1023) > 3) // initialising memory - should only run the first time
   {
-    EEPROM.write(1023, 0);
+    EEPROM.write(1023, 0); // setting slot 0 as active slot
+    
+    for (byte i = 0; i < KNOB_AMT; i++) //set channels to default
+    {
+      knobs[i].midiChannel = 0; // default
+      knobs[i].midiCC = i;
+      knobs[i].max = 127;
+      knobs[i].min = 0;
+    }
+
     for (byte i = 0; i < 4; i++)
     {
-      saveConfig(i);
-    }
+      saveConfig(i); // overwrite all saveslots
+    }    
   }
 
-  // settings = loadSettings();
-  byte slot = EEPROM.read(1023);
+  byte slot = EEPROM.read(1023); // read recent save slot number
   loadConfig(slot);
   settings.midiChannel = 1;
   // saveSettings();
@@ -80,6 +114,7 @@ void setup()
 
   shiftInInit();
   analogReference(EXTERNAL); // for hardware prototypes 0.2 and on
+  // analogReference(INTERNAL); // for hardware prototypes 0.5 and on, NO EXTERNAL AS1117 3.3V REGULATOR
   muxBegin();
 
   Wire.begin();
@@ -97,11 +132,11 @@ void setup()
   delay(600);
   oledPrint("starting...    ", 0, 3, 0);
 
-  // for (byte i = 0; i < 48; i++)
-  // {
-  //   muxRead();
-  //   updateKnobs();
-  // }
+  for (byte i = 0; i < 48; i++)
+  {
+    muxRead();
+    updateKnobs();
+  }
 
   delay(300);
   oledPrint("SG20", 105, 3, 0);
@@ -135,12 +170,7 @@ void loop()
   updateKnobs();
   updateMenu();
 
-  // output midi
-  USBMIDI.poll(); // required to call in loop
-
-  // forward midi
-  forwardMidiUSBtoUART();
-  forwardUARTMidi();
+  updateMidi(); // forwarding Data
 
   sendButtonMidi();     // midi notes 0-4
   sendControllerMidi(); // send ccs
@@ -157,6 +187,6 @@ void loop()
     drawHome();
 
   // Pause before next pass through loop
-  // delay(50);
+  // delay(500);
   // delay(5);
 }

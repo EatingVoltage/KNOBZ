@@ -50,14 +50,15 @@ void muxRead()
     }
 }
 
-// void muxDebug()
-// {
-//     for (byte i = 0; i < 32; i++)
-//     {
-//         Serial.print(i);
-//         Serial.print(":");
-//         Serial.print(mux_in[i]);
-//         Serial.print("\t");
-//     }
-//     Serial.println();
-// }
+void muxDebug()
+{
+    for (byte i = 0; i < 32; i++)
+    {
+        Serial.print(i);
+        Serial.print(":");
+        Serial.print(mux_in[i]);
+        Serial.print("\t");
+    }
+    Serial.println();
+    delay(300);
+}

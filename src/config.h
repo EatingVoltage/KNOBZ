@@ -7,9 +7,9 @@
 
 #define PLUG_INDIC_PIN 7 // pin number of plug pin
 
-#define POT_TRSH 10 // knob threshold. must be high enough to get rid of pot/fader noise.
+#define POT_TRSH 16 // knob threshold. must be high enough to get rid of pot/fader noise.
 
-#define LED_BRIGHTNESS 20 // ws2812 control var
+#define LED_BRIGHTNESS 50 // ws2812 control var
 
 #define LIDAR_UPPER_LIMIT 400 // ceiling. higher values are omitted
 
