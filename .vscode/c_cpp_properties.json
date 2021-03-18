@@ -76,7 +76,7 @@
             ],
             "cStandard": "c11",
             "cppStandard": "c++11",
-            "compilerPath": "C:/Users/samue/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerPath": "C:/Users/samue/.platformio/packages/toolchain-atmelavr@1.50400.190710/bin/avr-gcc.exe",
             "compilerArgs": [
                 "-mmcu=atmega32u4",
                 ""

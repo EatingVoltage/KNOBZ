@@ -43,7 +43,7 @@ void muxRead()
         else
             digitalWrite(MUX_S[3], LOW);
 
-        // delay(1);
+        delayMicroseconds(10);
         // do 2 readings
         mux_in[pos] = analogRead(MUX_0_SIG);
         mux_in[pos + 16] = analogRead(MUX_1_SIG);

@@ -1,6 +1,9 @@
 todo:
 
 -add display timeout
+-remove bug in saving/loading
+-speed up oled using TWBR = 12; // 400 khz faster I2C clock 
+-improve EEPROM initializing routine if its the first time
 
 done:
 -add set channels and ccs to default at first startup
