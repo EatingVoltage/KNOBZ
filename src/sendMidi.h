@@ -4,10 +4,10 @@ void sendControllerMidi()
 {
     for (byte i = 0; i < KNOB_AMT; i++)
     {
-        if (knobs[i].hasNew)
+        if (knob[i].hasNew)
         {
-            byte val = map(knobs[i].val, 0, 127, knobs[i].min, knobs[i].max);
-            sendMidiCC(knobs[i].midiCC, val, knobs[i].midiChannel);
+            byte val = map(knob[i].val, 0, 127, knob[i].min, knob[i].max);
+            sendMidiCC(knob[i].midiCC, val, knob[i].midiChannel);
         }
     }
 }

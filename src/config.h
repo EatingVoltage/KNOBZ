@@ -7,7 +7,7 @@
 
 #define PLUG_INDIC_PIN 7 // pin number of plug pin
 
-#define POT_TRSH 16 // knob threshold. must be high enough to get rid of pot/fader noise.
+#define POT_TRSH 12 // knob threshold. must be high enough to get rid of pot/fader noise. 8 is the lowest most setting that can get full 7 bits 
 
 #define LED_BRIGHTNESS 50 // ws2812 control var
 

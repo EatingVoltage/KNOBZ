@@ -2,7 +2,7 @@
 
 #include <config.h>
 
-// ssd1306 oled
+// // ssd1306 oled
 #include <Wire.h> // for ssd1306
 #include <SPI.h>  // for ssd1306
 #include "io/oled.h"
@@ -18,7 +18,7 @@
 // lidar
 #include <io/lidar.h>
 
-// Analog In - read parallel analog values from the pots
+// // Analog In - read parallel analog values from the pots
 #include "io/analogMux.h"
 
 #include <MIDI.h>
@@ -79,19 +79,19 @@ void setup()
   if (EEPROM.read(1023) > 3) // initialising memory - should only run the first time
   {
     EEPROM.write(1023, 0); // setting slot 0 as active slot
-    
+
     for (byte i = 0; i < KNOB_AMT; i++) //set channels to default
     {
-      knobs[i].midiChannel = 0; // default
-      knobs[i].midiCC = i;
-      knobs[i].max = 127;
-      knobs[i].min = 0;
+      knob[i].midiChannel = 0; // default
+      knob[i].midiCC = i;
+      knob[i].max = 127;
+      knob[i].min = 0;
     }
 
     for (byte i = 0; i < 4; i++)
     {
       saveConfig(i); // overwrite all saveslots
-    }    
+    }
   }
 
   byte slot = EEPROM.read(1023); // read recent save slot number
@@ -132,20 +132,24 @@ void setup()
   delay(600);
   oledPrint("starting...    ", 0, 3, 0);
 
-  for (byte i = 0; i < 48; i++)
-  {
-    muxRead();
-    updateKnobs();
-  }
-
-  delay(300);
-  oledPrint("SG20", 105, 3, 0);
+  // delay(300);
+  oledPrint("SG21", 105, 3, 0);
 
   for (byte j = 0; j < 255; j++)
   {
+    muxRead();
+    updateKnobs();
     animateNeopixel(j);
     pixels.show();
     delay(2);
+  }
+
+  
+  // hold menu button to inhibit starting. upload new firmware
+  while(modeButton.pressed)
+  {
+    updateButtons(millis());
+    delay(200);
   }
 
   delay(1000);
@@ -159,6 +163,7 @@ void loop()
   // get fader & knobs values
   muxRead();
   // muxDebug(); // get raw values to serial
+  
 
   // get Button Values
   inputValues = shiftInUpdate();
@@ -190,3 +195,71 @@ void loop()
   // delay(500);
   // delay(5);
 }
+
+
+// performance testing
+
+// #define SAMPLE_AMT 32
+
+// int values[SAMPLE_AMT];
+
+// byte counter = 0;
+
+// void setup()
+// {
+//   analogReference(EXTERNAL); // for hardware prototypes 0.2 and on
+//   Serial.begin(31250);
+//   // while (!Serial)
+//   // {
+//   //   delay(10);
+//   // }
+//     delay(1000);
+//   for (byte i = 0; i < SAMPLE_AMT; i++)
+//   {
+//     values[i] = 0;
+//   }
+//   for (byte i = 0; i < 4; i++)
+//   {
+//     pinMode(MUX_S[i], OUTPUT);
+//     digitalWrite(MUX_S[i], LOW);
+//   }
+//   Serial.println("start");
+
+//     Wire.begin();
+//   oledBegin();  // uses wire
+// }
+
+// void loop()
+// {
+//   int reading = analogRead(A0);
+//   values[counter] = reading;
+
+//   if (counter == SAMPLE_AMT)
+//   {
+//     counter = 0;
+
+//     int minVal = values[0];
+//     for (byte i = 0; i < SAMPLE_AMT - 1; i++)
+//     {
+//       minVal = min(values[i + 1], minVal);
+//     }
+//     int maxVal = values[0];
+//     for (byte i = 0; i < SAMPLE_AMT - 1; i++)
+//     {
+//       maxVal = max(values[i + 1], maxVal);
+//     }
+//     Serial.print("min: " + String(minVal) + " - max: " + String(maxVal));
+//     Serial.println(" - diff: " + String(maxVal - minVal));
+//     oledPrint(String(minVal) + "   ", 0, 1, 0);
+//     oledPrint(String(maxVal) + "   ", 64, 1, 0);
+//     oledPrint(String(maxVal-minVal) + "   ", 32, 3, 0);
+//     delay(500);
+//   }
+
+//   else
+//   {
+//     counter++;
+//   }
+  
+//   delay(1);
+// }

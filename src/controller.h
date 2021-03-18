@@ -1,10 +1,20 @@
 #include <Arduino.h>
 
-struct knob_t
+// #define KNOB_AVG_LEN 4
+// #define KNOB_AVG_LEN 8
+#define KNOB_AVG_LEN 16
+
+class knob_c
 {
+private:
+    /* data */
+    unsigned int sum = 0; // for running average
+    byte readBuf = 0;
+
+public:
     // value
-    int readBuf = 0;
-    int val = 0;
+
+    byte val = 0;
     bool hasNew = false;
 
     byte min = 0;
@@ -19,115 +29,109 @@ struct knob_t
     // midi
     byte midiChannel = 0;
     byte midiCC = 0;
+
+    void update(int reading);
+    byte getVal();
 };
 
-knob_t knobs[KNOB_AMT];
+void knob_c::update(int reading)
+{
+    // running average$
+    long x = sum * (KNOB_AVG_LEN - 1);
+    x = x / KNOB_AVG_LEN;
+    sum = x + reading / 4;
+
+    // check if there is new data
+
+    // Serial.println(analogRead(A4));
+    // Serial.println(reading);
+    // Serial.println(sum);
+    // delay(200);
+
+    val = (sum / KNOB_AVG_LEN);
+    val /= 2; // reducing to target 7 bit val
+
+    hasNew = false;
+    if (readBuf != val)
+    {
+        readBuf = val;
+        hasNew = true;
+    }
+}
+
+byte knob_c::getVal()
+{
+    // int x = (sum / KNOB_AVG_LEN);
+    // byte res = x / 2; // reducing to target 7 bit val
+    return val;
+}
+
+knob_c knob[KNOB_AMT];
 
 byte activeKnob = 0;
 
-// mappings
-// byte faderChannel[12] = {15, 14, 13, 12, 11, 10, 31, 30, 29, 28, 27, 26};
-// byte potsChannel[20] = {9, 8, 6, 7, 25, 24, 22, 23, 5, 4, 3, 2, 1, 0, 21, 20, 19, 18, 17, 16};
-
 void updateKnobs()
 {
-    // get values
-    int knobValues[KNOB_AMT]; // all input goes through here
-    // for (byte i = 0; i < KNOB_AMT; i++)
-    // {
-    //     knobValues[i] = 0;
-    // }
-
-    // for (byte i = 0; i < 6; i++) // faders
-    // {
-    //     knobValues[i] = mux_in[faderChannel[i]];
-    // }
-    // for (byte i = 0; i < 20; i++) // muxed knobs
-    // {
-    //     knobValues[i + 12] = 1023 - mux_in[potsChannel[i]]; //inverted
-    // }
+    // feed data to knob objects
 
     // multiplexed inputs
     for (byte i = 0; i < 32; i++)
     {
         int x = mux_in[i];
-        knobValues[i] = x;
+        knob[i].update(1023 - x);
     }
 
-    // for (byte i = 0; i < 32; i++)
-    // {
-    //     Serial.print(i);
-    //     Serial.print(":");
-    //     Serial.print(knobValues[i]);
-    //     Serial.print("\t");
-    // }
-    // Serial.println();
-
     // direct pin inputs
-    knobValues[32] = 1023 - analogRead(A2); // inverted
-    knobValues[33] = 1023 - analogRead(A3); //
-    knobValues[34] = 1023 - analogRead(A4); //
-    knobValues[35] = 1023 - analogRead(A5); //
+    knob[32].update(analogRead(A2)); // 
+    knob[33].update(analogRead(A3)); //
+    knob[34].update(analogRead(A4)); //
+    knob[35].update(analogRead(A5)); //
 
-    // air knob - lidar sensor
-    int x = constrain(sensorReading, 0, LIDAR_UPPER_LIMIT);
-    // knobValues[36] = 0;
-    knobValues[36] = map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0);
-    // debugLidarSensor();
-    // Serial.println(knobValues[36]);
-
-    // for (byte i = 0; i < 37; i++)
-    // {
-    //     // if (knobValues[i] > 1023)
-    //     // {
-    //         // Serial.print(i + ": " + (knobValues[i]));
-    //         // Serial.println("biiiig: " + String(i) + " " + String(knobValues[i]));
-    //         // delay(200);
-    //     // }
-    // }
-    // Serial.println();
+    // // air knob - lidar sensor
+    // int x = constrain(sensorReading, 0, LIDAR_UPPER_LIMIT);
+    // // knobValues[36] = 0;
+    // knobValues[36] = map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0);
+    // // debugLidarSensor();
 
     // process readings
-    for (byte i = 0; i < KNOB_AMT; i++) // read all knobs
+    for (byte i = 0; i < KNOB_AMT; i++) // read all knob
     {
-        knobs[i].hasNew = false;
-
-        int reading = knobValues[i];
-        if (abs(reading - knobs[i].readBuf) > POT_TRSH) // if a pot was moved
+        if (knob[i].hasNew)
         {
-            knobs[i].readBuf = reading;
-            int x = map(reading, 0, 1023, 127, 0);
-            knobs[i].val = x;
-            knobs[i].hasNew = true;
-            activeKnob = i;
+            if (i == activeKnob)
+            {
 
-            // update oled if knob was moved
-            if (minButton.pressed)
-            {
-                knobs[i].min = min(knobs[i].val, 127 - MINMAX_MARGIN);
-                redrawOled = true;
-                knobs[i].val = knobs[i].min; // to think about. scaling does not match like this
-            }
-            else if (maxButton.pressed)
-            {
-                knobs[i].max = max(knobs[i].val, MINMAX_MARGIN);
-                redrawOled = true;
-                knobs[i].val = knobs[i].max; // to think about. scaling does not match like this
+                // update oled if knob was moved
+                if (minButton.pressed)
+                {
+                    knob[i].min = min(knob[i].getVal(), 127 - MINMAX_MARGIN);
+                    redrawOled = true;
+                    knob[i].val = knob[i].min; // to think about. scaling does not match like this
+                }
+                else if (maxButton.pressed)
+                {
+                    knob[i].max = max(knob[i].getVal(), MINMAX_MARGIN);
+                    redrawOled = true;
+                    knob[i].val = knob[i].max; // to think about. scaling does not match like this
+                }
             }
 
-            sendMidiCC(knobs[i].midiCC, knobs[i].val, knobs[i].midiChannel);
+            else if(!maxButton.pressed && !minButton.pressed)
+                activeKnob = i;
+
+            // sendMidiCC(knob[i].midiCC, knob[i].val, knob[i].midiChannel);
         }
     }
 
     // debugging
     // for (byte i = 0; i < 12; i++)
     // {
-    //     if (knobs[i].hasNew)
+    //     if (knob[i].hasNew)
     //     {
     //         Serial.print("knob ");
     //         Serial.print(i);
     //         Serial.print(" has new ");
-    //         Serial.println(knobs[i].val);
+    //         Serial.println(knob[i].val);
     //         // delay(300);
     //     }
     // }
@@ -165,10 +169,10 @@ void saveConfig(byte slot) // slots 0-3
     {
         knobConfig_t saveState;
         int addr = sizeof(settings) + (slot * sizeof(knobConfig_t) * KNOB_AMT) + (sizeof(knobConfig_t) * i);
-        saveState.midiChannel = knobs[i].midiChannel;
-        saveState.cc = knobs[i].midiCC;
-        saveState.min = knobs[i].min;
-        saveState.max = knobs[i].max;
+        saveState.midiChannel = knob[i].midiChannel;
+        saveState.cc = knob[i].midiCC;
+        saveState.min = knob[i].min;
+        saveState.max = knob[i].max;
         // EEPROM.put(addr, saveState);
         EEPROM_writeAnything(addr, saveState);
     }
@@ -186,10 +190,10 @@ void loadConfig(byte slot)
         // EEPROM.get(addr, saveState);
         EEPROM_readAnything(addr, saveState);
 
-        knobs[i].midiChannel = saveState.midiChannel;
-        knobs[i].midiCC = saveState.cc;
-        knobs[i].min = saveState.min;
-        knobs[i].max = saveState.max;
+        knob[i].midiChannel = saveState.midiChannel;
+        knob[i].midiCC = saveState.cc;
+        knob[i].min = saveState.min;
+        knob[i].max = saveState.max;
     }
     // oledPrint("channel: " + saveState.midiChannel);
 }
