@@ -1,19 +1,17 @@
 #include <Arduino.h>
 
 // #define KNOB_AVG_LEN 4
-// #define KNOB_AVG_LEN 8
-#define KNOB_AVG_LEN 16
+// #define KNOB_AVG_LEN 12
+// #define POT_TRSH 10
 
 class knob_c
 {
 private:
-    /* data */
-    unsigned int sum = 0; // for running average
-    byte readBuf = 0;
+    unsigned long sum = 0; // for running average
+    int readBuf = 0;
+    int oldVal = 0;
 
 public:
-    // value
-
     byte val = 0;
     bool hasNew = false;
 
@@ -36,33 +34,36 @@ public:
 
 void knob_c::update(int reading)
 {
-    // running average$
+    // Serial.print(reading);
+    // Serial.print(" ");
+
+    // running average
     long x = sum * (KNOB_AVG_LEN - 1);
-    x = x / KNOB_AVG_LEN;
-    sum = x + reading / 4;
+    x /= KNOB_AVG_LEN;
+    sum = x + reading;
+
 
     // check if there is new data
-
-    // Serial.println(analogRead(A4));
-    // Serial.println(reading);
-    // Serial.println(sum);
-    // delay(200);
-
-    val = (sum / KNOB_AVG_LEN);
-    val /= 2; // reducing to target 7 bit val
-
     hasNew = false;
-    if (readBuf != val)
+
+    x = (sum / KNOB_AVG_LEN);
+    // Serial.print("x: ");
+    // Serial.print(x);
+
+    if(abs(x-oldVal) > POT_TRSH)
     {
-        readBuf = val;
+        oldVal = x;
+        val = x/8; // final scaling to 7 bit
         hasNew = true;
+        // Serial.println(val);
+        // delay(50);
     }
+
+    // Serial.println();
 }
 
 byte knob_c::getVal()
 {
-    // int x = (sum / KNOB_AVG_LEN);
-    // byte res = x / 2; // reducing to target 7 bit val
     return val;
 }
 
@@ -86,12 +87,17 @@ void updateKnobs()
     knob[33].update(analogRead(A3)); //
     knob[34].update(analogRead(A4)); //
     knob[35].update(analogRead(A5)); //
+    
+    // testing
+    // int reading = analogRead(A4);
+    // Serial.println(reading);
+    // knob[34].update(reading); //
 
-    // // air knob - lidar sensor
+    // air knob - lidar sensor
     // int x = constrain(sensorReading, 0, LIDAR_UPPER_LIMIT);
-    // // knobValues[36] = 0;
-    // knobValues[36] = map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0);
-    // // debugLidarSensor();
+    // knobValues[36] = 0;
+    // knob[36].update(map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0));
+    // debugLidarSensor();
 
     // process readings
     for (byte i = 0; i < KNOB_AMT; i++) // read all knob
@@ -117,8 +123,9 @@ void updateKnobs()
             }
 
             else if(!maxButton.pressed && !minButton.pressed)
+            {
                 activeKnob = i;
-
+            }
             // sendMidiCC(knob[i].midiCC, knob[i].val, knob[i].midiChannel);
         }
     }
