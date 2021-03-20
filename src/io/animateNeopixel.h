@@ -7,7 +7,7 @@ byte getHueFromKnobs()
 
     for (byte i = 0; i < KNOB_AMT; i++)
     {
-        hue += ((knob[i].val / 6) % 255); // TODO check range here
+        hue += ((knob[i].getVal() / 6) % 255); // TODO check range here
         hue = hue % 255;
     }
 

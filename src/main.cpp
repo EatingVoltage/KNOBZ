@@ -118,6 +118,7 @@ void setup()
   muxBegin();
 
   Wire.begin();
+  Wire.setClock(400000);
   oledBegin();  // uses wire
   lidarBegin(); // uses wire
   controllerBegin();
@@ -164,7 +165,6 @@ void loop()
   muxRead();
   // muxDebug(); // get raw values to serial
   
-
   // get Button Values
   inputValues = shiftInUpdate();
   updateButtons(tFrame);
@@ -176,7 +176,6 @@ void loop()
   updateMenu();
 
   updateMidi(); // forwarding Data
-
   sendButtonMidi();     // midi notes 0-4
   sendControllerMidi(); // send ccs
 

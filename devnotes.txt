@@ -4,6 +4,7 @@ todo:
 -remove bug in saving/loading
 -speed up oled using TWBR = 12; // 400 khz faster I2C clock 
 -improve EEPROM initializing routine if its the first time
+-add / test lidar sensor.
 
 done:
 -add set channels and ccs to default at first startup
@@ -38,3 +39,4 @@ done:
 dream features:
 -add smoothing option (maybe hardcode to knobs only)
 -name presets / show preset name on startup
+-improve knob filtering: average to full 10 bits, then if(difference is high enough) update value.
