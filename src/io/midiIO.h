@@ -4,29 +4,29 @@
 
 void sendMidiCC(byte cc, byte val, byte midiChannel)
 {
-    tickMidiOutIndicator();
-    MIDI.sendControlChange(cc, val, midiChannel);
+    tickMidiOutIndicator(millis());
+    MIDI.sendControlChange(cc, val, midiChannel + 1);
+    // MIDI.sendControlChange(cc, val, midiChannel);
     if (sendMidi)
     {
-        USBIndicator.tick();
+        usbLed.trigger(millis());
         usbMidiControlChange(midiChannel + 1, cc, val);
         // MidiUSB.flush();
+        // if (sendSerialDebug)
+        //     Serial.println("CC" + String(cc) + ": " + String(val) + " CH:" + String(midiChannel));
     }
-    // if (sendSerialDebug)
-    //     Serial.println("CC" + String(cc) + ": " + String(val) + " CH:" + String(midiChannel));
-}
 
-// void sendMidiPitchbend(int val, byte midiChannel)
-// {
-//     if (sendMidi)
-//         MIDI.sendPitchBend(val, midiChannel+1);
-//     // if (sendSerialDebug)
-//     //     Serial.println("Pitchbend: " + String(val));
-// }
+    // void sendMidiPitchbend(int val, byte midiChannel)
+    // {
+    //     if (sendMidi)
+    //         MIDI.sendPitchBend(val, midiChannel+1);
+    //     // if (sendSerialDebug)
+    //     //     Serial.println("Pitchbend: " + String(val));
+}
 
 void sendMidiNoteOn(byte pitch, byte velocity, byte midiChannel)
 {
-    tickMidiOutIndicator(); // using wrapper function instead of direct method to implement plug indicator logic
+    tickMidiOutIndicator(millis()); // using wrapper function instead of direct method to implement plug indicator logic
     MIDI.sendNoteOn(pitch, velocity, midiChannel + 1);
     if (sendMidi)
     {

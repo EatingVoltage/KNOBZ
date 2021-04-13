@@ -3,7 +3,7 @@
 void showHeader() // shows cc and channel on top of oled
 {
     oledPrint("CC: " + String(knob[activeKnob].midiCC));
-    oledPrint("CH: " + String(knob[activeKnob].midiChannel), 90, 0, 0);
+    oledPrint("CH: " + String(knob[activeKnob].midiChannel+1), 90, 0, 0);
 }
 
 void showHome()
@@ -43,16 +43,13 @@ void drawHome()
     if (activeKnob != oldActiveKnob || redrawOled)
     {
         oldActiveKnob = activeKnob;
-        // if (!menu.pos)
-        // {
-            if (minButton.pressed)
-                showMin();
-            else if (maxButton.pressed)
-                showMax();
-            else
-                showHome();
-            redrawOled = false; // reset flag
-        // }
+        if (minButton.pressed)
+            showMin();
+        else if (maxButton.pressed)
+            showMax();
+        else
+            showHome();
+        redrawOled = false; // reset flag
     }
 
     if (minButton.fell)
@@ -63,27 +60,4 @@ void drawHome()
         showMax();
     else if (maxButton.rose)
         showHome();
-
-    // else showHome();
-
-    // uiState++;
-    // if (uiState > 2)
-    //     uiState = 0;
-    // switch (uiState)
-    // {
-    // case 0:
-    // showHome();
-    //     break;
-
-    // case 1:
-    //     showMin();
-    //     break;
-
-    // case 2:
-    //     showMax();
-    //     break;
-
-    // default:
-    //     break;
-    // }
 }

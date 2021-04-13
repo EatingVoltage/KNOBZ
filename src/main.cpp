@@ -2,6 +2,8 @@
 
 #include <config.h>
 
+unsigned long tNow = 0;
+
 // // ssd1306 oled
 #include <Wire.h> // for ssd1306
 #include <SPI.h>  // for ssd1306
@@ -9,7 +11,7 @@
 
 // neopixel leds
 #include "io/ws2812.h"
-#include "io/indicatorLeds.h"
+#include "io/Ledling.h"
 
 //Shift In - reads parallel in serial out 74hc165 Shift registers
 #include "io/shiftIn.h"
@@ -32,7 +34,7 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 // global vars:
 byte uiState = 0; // 0= home, 1 = editing min, 2 = editing max
 byte hue = 0;
-unsigned long tFrame = 0;
+// unsigned long tFrame = 0;
 
 bool redrawOled = false; // flag to trigger oled redraw
 
@@ -43,7 +45,7 @@ void updateMidi() // read and forward usb and din midi
 
   // forward midi
   forwardMidiUSBtoUART();
-  forwardUARTMidi();
+  forwardUARTMidi(millis());
 }
 
 void myDelay(int dur) // delay without blocking midi forwarding
@@ -58,7 +60,7 @@ void myDelay(int dur) // delay without blocking midi forwarding
 
     // forward midi
     forwardMidiUSBtoUART();
-    forwardUARTMidi();
+    forwardUARTMidi(millis());
   }
 }
 
@@ -96,12 +98,11 @@ void setup()
 
   byte slot = EEPROM.read(1023); // read recent save slot number
   loadConfig(slot);
-  settings.midiChannel = 1;
+  settings.midiChannel = 0;
   // saveSettings();
 
   MIDI.begin();
-
-  Serial.begin(31250);
+  // Serial.begin(31250);
 
   neopixelBegin();
 
@@ -113,8 +114,7 @@ void setup()
   pixels.show();
 
   shiftInInit();
-  analogReference(EXTERNAL); // for hardware prototypes 0.2 and on
-  // analogReference(INTERNAL); // for hardware prototypes 0.5 and on, NO EXTERNAL AS1117 3.3V REGULATOR
+  analogReference(EXTERNAL); // using 3.3v linear regulator
   muxBegin();
 
   Wire.begin();
@@ -123,14 +123,18 @@ void setup()
   lidarBegin(); // uses wire
   controllerBegin();
 
-  oledPrint("tinyLittlFaderBank", 0, 1, 3);
+
+
+  oledPrint("eatingVoltage", 0, 0, 2);
+  delay(400);
+  oledPrint("Knobz", 50, 1, 3);
   delay(300);
   oledPrint("loading slot " + String(slot + 1), 0, 3, 0);
   // delay(400);
   // oledPrint("starting.    ", 0, 3, 0);
   // delay(200);
   // oledPrint("starting..   ", 0, 3, 0);
-  delay(600);
+  delay(800);
   oledPrint("starting...    ", 0, 3, 0);
 
   // delay(300);
@@ -149,17 +153,18 @@ void setup()
   // hold menu button to inhibit starting. upload new firmware
   while(modeButton.pressed)
   {
-    updateButtons(millis());
+    updateButtons();
     delay(200);
   }
 
+  // oled.invertDisplay(1);
   delay(1000);
   oled.clear();
 }
 
 void loop()
 {
-  tFrame = millis();
+  tNow = millis();
 
   // get fader & knobs values
   muxRead();
@@ -167,9 +172,19 @@ void loop()
   
   // get Button Values
   inputValues = shiftInUpdate();
-  updateButtons(tFrame);
+  updateButtons();
 
   readLidarSensor(8); // set running average sampling amount - slew rate limiter
+
+  // hold menu button to send all knobs
+  if(modeButton.held) // hacky way to send all knob states. manipulates data at mux_in
+  {
+    for (byte i = 0; i < MUX_CHANNELS_AMT; i++)
+    {
+      if(mux_in[i]< 511) mux_in[i] += 50;  
+      else mux_in[i] -= 50;  
+    }
+  }
 
   // update
   updateKnobs();
@@ -180,10 +195,11 @@ void loop()
   sendControllerMidi(); // send ccs
 
   // write to Leds
+  updateLedlings();
   animateNeopixel();
-  midiInIndicator.update();
-  midiOutIndicator.update();
-  USBIndicator.update();
+  // midiInIndicator.update();
+  // midiOutIndicator.update();
+  // USBIndicator.update();
   pixels.show();
 
   // write to oled

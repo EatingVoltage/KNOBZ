@@ -1,14 +1,9 @@
 #include <Arduino.h>
 
-// #define KNOB_AVG_LEN 4
-// #define KNOB_AVG_LEN 12
-// #define POT_TRSH 10
-
 class knob_c
 {
 private:
-    unsigned long sum = 0; // for running average
-    int readBuf = 0;
+    int sum = 0; // for running average
     int oldVal = 0;
 
 public:
@@ -18,12 +13,6 @@ public:
     byte min = 0;
     byte max = 127;
 
-    // anim
-    // long t0 = 0;
-    // int dur = 0;
-    // byte origin = 0;
-    // byte target = 0;
-
     // midi
     byte midiChannel = 0;
     byte midiCC = 0;
@@ -32,34 +21,23 @@ public:
     byte getVal();
 };
 
+
 void knob_c::update(int reading)
 {
-    // Serial.print(reading);
-    // Serial.print(" ");
-
     // running average
-    long x = sum * (KNOB_AVG_LEN - 1);
-    x /= KNOB_AVG_LEN;
-    sum = x + reading;
-
-
+    sum = (sum * (KNOB_AVG_LEN - 1) / KNOB_AVG_LEN) + reading;
+    // int x = (sum / KNOB_AVG_LEN);                                           // get single reading from avg
+    // get reading: 
+    int x = constrain(map(sum / KNOB_AVG_LEN, 0, 1023, 0, 1023 + 2 * KNOB_DEADZONE) - KNOB_DEADZONE, 0, 1023); // mapping out dead area
+    
     // check if there is new data
     hasNew = false;
-
-    x = (sum / KNOB_AVG_LEN);
-    // Serial.print("x: ");
-    // Serial.print(x);
-
-    if(abs(x-oldVal) > POT_TRSH)
+    if (abs(x - oldVal) > POT_TRSH)
     {
         oldVal = x;
-        val = x/8; // final scaling to 7 bit
+        val = x / 8; // scaling to final 7 bit
         hasNew = true;
-        // Serial.println(val);
-        // delay(50);
     }
-
-    // Serial.println();
 }
 
 byte knob_c::getVal()
@@ -76,27 +54,16 @@ void updateKnobs()
     // feed data to knob objects
 
     // multiplexed inputs
-    for (byte i = 0; i < 32; i++)
+    for (byte i = 0; i < 30; i++)
+    // for (byte i = 0; i < 1; i++)
     {
-        int x = mux_in[i];
-        knob[i].update(1023 - x);
+        // int x = mux_in[i];
+        knob[i].update(1023 - mux_in[i]);
     }
-
-    // direct pin inputs
-    knob[32].update(analogRead(A2)); // 
-    knob[33].update(analogRead(A3)); //
-    knob[34].update(analogRead(A4)); //
-    knob[35].update(analogRead(A5)); //
-    
-    // testing
-    // int reading = analogRead(A4);
-    // Serial.println(reading);
-    // knob[34].update(reading); //
 
     // air knob - lidar sensor
     // int x = constrain(sensorReading, 0, LIDAR_UPPER_LIMIT);
-    // knobValues[36] = 0;
-    // knob[36].update(map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0));
+    // knob[30].update(map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0));
     // debugLidarSensor();
 
     // process readings
@@ -106,27 +73,25 @@ void updateKnobs()
         {
             if (i == activeKnob)
             {
-
                 // update oled if knob was moved
                 if (minButton.pressed)
                 {
                     knob[i].min = min(knob[i].getVal(), 127 - MINMAX_MARGIN);
                     redrawOled = true;
-                    knob[i].val = knob[i].min; // to think about. scaling does not match like this
+                    knob[i].val = knob[i].min;
                 }
                 else if (maxButton.pressed)
                 {
                     knob[i].max = max(knob[i].getVal(), MINMAX_MARGIN);
                     redrawOled = true;
-                    knob[i].val = knob[i].max; // to think about. scaling does not match like this
+                    knob[i].val = knob[i].max;
                 }
             }
 
-            else if(!maxButton.pressed && !minButton.pressed)
+            else if (!maxButton.pressed && !minButton.pressed)
             {
                 activeKnob = i;
             }
-            // sendMidiCC(knob[i].midiCC, knob[i].val, knob[i].midiChannel);
         }
     }
 

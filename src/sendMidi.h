@@ -6,8 +6,12 @@ void sendControllerMidi()
     {
         if (knob[i].hasNew)
         {
-            byte val = map(knob[i].getVal(), 0, 127, knob[i].min, knob[i].max);
-            sendMidiCC(knob[i].midiCC, val, knob[i].midiChannel);
+            byte val = 0;
+            if(minButton.pressed) val = knob[i].min;        // 
+            else if(maxButton.pressed) val = knob[i].max;   // dont scale if setting min or max
+            else val = map(knob[i].getVal(), 0, 127, knob[i].min, knob[i].max); // default case
+            // Serial.println(val);
+            sendMidiCC(knob[i].midiCC, val, knob[i].midiChannel); 
         }
     }
 }
