@@ -221,7 +221,7 @@ void updateMenu()
                 if (knob[menu.editingKnob].hasNew) // can edit menuValue with knob
                 {
                     menu.currentVal = knob[menu.editingKnob].getVal();
-                    knob[menu.editingKnob].midiChannel = map(knob[menu.editingKnob].getVal(), 0, 127, 1, 16);
+                    knob[menu.editingKnob].midiChannel = map(knob[menu.editingKnob].getVal(), 0, 127, 0, 15);
                     drawMenu();
                 }
                 break;

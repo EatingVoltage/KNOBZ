@@ -48,7 +48,7 @@ void updateMidi() // read and forward usb and din midi
   forwardUARTMidi(millis());
 }
 
-void myDelay(int dur) // delay without blocking midi forwarding
+void myDelay(unsigned long dur) // delay without blocking midi forwarding
 {
   long t0 = millis();
   while (millis() - t0 < dur)
@@ -78,8 +78,12 @@ void setup()
 {
   pinMode(PLUG_INDIC_PIN, INPUT); // initialise midi out plug indicator
 
-  if (EEPROM.read(1023) > 3) // initialising memory - should only run the first time
+  byte slot = EEPROM.read(RECENT_SLOT_EEPROM_ADDR); // read recent save slot number
+
+  if (slot > 3) // initialising memory - should only run the first time the device boots
   {
+    oledPrint("welcome");
+    slot = 0;
     EEPROM.write(1023, 0); // setting slot 0 as active slot
 
     for (byte i = 0; i < KNOB_AMT; i++) //set channels to default
@@ -94,15 +98,19 @@ void setup()
     {
       saveConfig(i); // overwrite all saveslots
     }
+
+    settings.midiChannel = 0;
+    saveSettings();
   }
 
-  byte slot = EEPROM.read(1023); // read recent save slot number
-  loadConfig(slot);
-  settings.midiChannel = 0;
-  // saveSettings();
+  else // regular startup
+  {
+    loadConfig(slot);
+    settings = loadSettings();
+  }
+  // settings.midiChannel = 0; // todo: load from config
 
   MIDI.begin();
-  // Serial.begin(31250);
 
   neopixelBegin();
 
@@ -110,9 +118,9 @@ void setup()
   {
     setPixelHsv(i, 0, 0, 0);
   }
-
   pixels.show();
 
+  // init hardware input
   shiftInInit();
   analogReference(EXTERNAL); // using 3.3v linear regulator
   muxBegin();
@@ -121,44 +129,61 @@ void setup()
   Wire.setClock(400000);
   oledBegin();  // uses wire
   lidarBegin(); // uses wire
+
+  // init engine
   controllerBegin();
 
-
-
-  oledPrint("eatingVoltage", 0, 0, 2);
-  delay(400);
-  oledPrint("Knobz", 50, 1, 3);
-  delay(300);
-  oledPrint("loading slot " + String(slot + 1), 0, 3, 0);
-  // delay(400);
-  // oledPrint("starting.    ", 0, 3, 0);
-  // delay(200);
-  // oledPrint("starting..   ", 0, 3, 0);
+  // startup anim
+  // oledPrint("-eatingVoltage-", 15, 0, 0);
+  // delay(800);
+  // oled.setCol(0);
+  // oled.clearToEOL();
+  String s = "KNOBZ";
+  oled.setCursor(42, 0);
+  oled.setFont(Arial_bold_14);
+  for (byte i = 0; i < s.length(); i++)
+  {
+    oled.print(s[i]);
+    delay(200);
+  }
+  oledPrint("-eatingVoltage-", 20, 3, 0);
   delay(800);
-  oledPrint("starting...    ", 0, 3, 0);
 
-  // delay(300);
-  oledPrint("SG21", 105, 3, 0);
+  // oledPrint("KNOBZ", 42, 0, 3);
+  delay(500);
+  oledPrint("loading slot " + String(slot + 1), 0, 3, 0);
+  oled.clearToEOL();
+  delay(1000);
+  oledPrint("ok.", 105, 3, 0);
+  delay(500);
+  oled.setCol(0);
+  oled.clearToEOL();
 
+  oled.setCursor(0, 3);
   for (byte j = 0; j < 255; j++)
   {
     muxRead();
     updateKnobs();
+    for (byte i = 0; i < KNOB_AMT; i++)
+    {
+      knob[i].hasNew = false;
+    }
     animateNeopixel(j);
     pixels.show();
+    if (j % (255/24) == 1)
+      oled.print(".");
     delay(2);
   }
 
-  
-  // hold menu button to inhibit starting. upload new firmware
-  while(modeButton.pressed)
+  // hold menu button to inhibit starting. upload new firmware this way
+  while (modeButton.pressed)
   {
     updateButtons();
     delay(200);
   }
 
   // oled.invertDisplay(1);
-  delay(1000);
+  // delay(1000);
   oled.clear();
 }
 
@@ -169,7 +194,7 @@ void loop()
   // get fader & knobs values
   muxRead();
   // muxDebug(); // get raw values to serial
-  
+
   // get Button Values
   inputValues = shiftInUpdate();
   updateButtons();
@@ -177,12 +202,14 @@ void loop()
   readLidarSensor(8); // set running average sampling amount - slew rate limiter
 
   // hold menu button to send all knobs
-  if(modeButton.held) // hacky way to send all knob states. manipulates data at mux_in
+  if (modeButton.held) // hacky way to send all knob states. manipulates data at mux_in
   {
     for (byte i = 0; i < MUX_CHANNELS_AMT; i++)
     {
-      if(mux_in[i]< 511) mux_in[i] += 50;  
-      else mux_in[i] -= 50;  
+      if (mux_in[i] < 511)
+        mux_in[i] += 50;
+      else
+        mux_in[i] -= 50;
     }
   }
 
@@ -190,7 +217,7 @@ void loop()
   updateKnobs();
   updateMenu();
 
-  updateMidi(); // forwarding Data
+  updateMidi();         // forwarding Data
   sendButtonMidi();     // midi notes 0-4
   sendControllerMidi(); // send ccs
 
@@ -210,7 +237,6 @@ void loop()
   // delay(500);
   // delay(5);
 }
-
 
 // performance testing
 
@@ -275,6 +301,6 @@ void loop()
 //   {
 //     counter++;
 //   }
-  
+
 //   delay(1);
 // }

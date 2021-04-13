@@ -1,5 +1,6 @@
 todo:
 
+-check automatic loading of recent slot at setup()
 -optimize draw in menu. just redraw parts of screen in some cases
     -fix text positions
 -improve EEPROM initializing routine if its the first time

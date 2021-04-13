@@ -3,37 +3,41 @@
 void showHeader() // shows cc and channel on top of oled
 {
     oledPrint("CC: " + String(knob[activeKnob].midiCC));
-    oledPrint("CH: " + String(knob[activeKnob].midiChannel+1), 90, 0, 0);
+
+    byte x = 92;
+    if (knob[activeKnob].midiChannel+1 < 10) x += 8;
+    oledPrint("CH: " + String(knob[activeKnob].midiChannel+1), x, 0, 0);
+    // oledPrint("CH: " + String(knob[activeKnob].midiChannel+1), 95, 0, 0);
 }
 
 void showHome()
 {
     oled.clear();
     showHeader();
-    oledPrint("MIN: " + String(knob[activeKnob].min), 0, 3, 0);
+     oledPrint("MIN: " + String(knob[activeKnob].min), 0, 3, 0);
     oledPrint("MAX: " + String(knob[activeKnob].max), 80, 3, 0);
 
-    oledPrint(String(activeKnob), 55, 1, 3);
+    byte x = 58;
+    if (activeKnob < 10) x += 4;
+    oledPrint(String(activeKnob), x, 1, 3);
 }
 
 void showMin()
 {
     oled.clear();
     showHeader();
-    oledPrint(String(activeKnob), 55, 0, 3);
     oledPrint("MIN:" + String(knob[activeKnob].min), 0, 2, 1);
     oledPrint("MAX: " + String(knob[activeKnob].max), 80, 3, 0);
-    oledPrint(String(activeKnob), 55, 0, 3);
+    oledPrint(String(activeKnob), 58, 0, 3);
 }
 
 void showMax()
 {
     oled.clear();
     showHeader();
-    oledPrint(String(activeKnob), 55, 0, 3);
     oledPrint("MIN: " + String(knob[activeKnob].min), 0, 3, 0);
-    oledPrint("MAX:" + String(knob[activeKnob].max), 65, 2, 1);
-    oledPrint(String(activeKnob), 55, 0, 3);
+    oledPrint("MAX:" + String(knob[activeKnob].max), 74, 2, 1);
+    oledPrint(String(activeKnob), 58, 0, 3);
 }
 
 byte oldActiveKnob = 0;

@@ -72,14 +72,12 @@ void updateButtons()
 
     // debugging
 
-    // Serial.print("min button ");
-    // Serial.println(minButton.pressed);
-    // if(minButton.pressed)
-    // Serial.println("minButton.pressed");
-    // if(maxButton.pressed)
-    // Serial.println("maxButton.pressed");
-    // if(modeButton.pressed)
-    // Serial.println("modeButton.pressed");
+    // if (minButton.pressed)
+    //     Serial.println("minButton.pressed");
+    // if (maxButton.pressed)
+    //     Serial.println("maxButton.pressed");
+    // if (modeButton.pressed)
+    //     Serial.println("modeButton.pressed");
 
     // for (byte i = 0; i < 4; i++)
     // {

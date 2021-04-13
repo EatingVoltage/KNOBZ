@@ -21,15 +21,14 @@ public:
     byte getVal();
 };
 
-
 void knob_c::update(int reading)
 {
     // running average
     sum = (sum * (KNOB_AVG_LEN - 1) / KNOB_AVG_LEN) + reading;
     // int x = (sum / KNOB_AVG_LEN);                                           // get single reading from avg
-    // get reading: 
+    // get reading:
     int x = constrain(map(sum / KNOB_AVG_LEN, 0, 1023, 0, 1023 + 2 * KNOB_DEADZONE) - KNOB_DEADZONE, 0, 1023); // mapping out dead area
-    
+
     // check if there is new data
     hasNew = false;
     if (abs(x - oldVal) > POT_TRSH)
@@ -136,7 +135,8 @@ void updateKnobs()
 
 void saveConfig(byte slot) // slots 0-3
 {
-    EEPROM.update(1023, slot);
+    EEPROM.update(RECENT_SLOT_EEPROM_ADDR, slot);
+    // Serial.println(sizeof(knobConfig_t) * KNOB_AMT * 4);
     for (byte i = 0; i < KNOB_AMT; i++)
     {
         knobConfig_t saveState;
@@ -152,7 +152,7 @@ void saveConfig(byte slot) // slots 0-3
 
 void loadConfig(byte slot)
 {
-    EEPROM.update(1023, slot); // saving last loaded slot number for startup loading recent preset
+    EEPROM.update(RECENT_SLOT_EEPROM_ADDR, slot); // saving last loaded slot number for startup loading recent preset
     // get data here
 
     for (byte i = 0; i < KNOB_AMT; i++)
@@ -172,5 +172,5 @@ void loadConfig(byte slot)
 
 void controllerBegin() // set midi config
 {
-    loadConfig(EEPROM.read(1023)); // loading recent preset slot
+    loadConfig(EEPROM.read(RECENT_SLOT_EEPROM_ADDR)); // loading recent preset slot
 }
