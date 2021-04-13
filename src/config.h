@@ -3,7 +3,9 @@
 // this file saves and loads the LevelConfig struct to eeprom.
 
 #include <EEPROM.h>
-#define EEPROM_ADDR 0
+#define EEPROM_ADDR 0 // default eeprom addr for knob state data
+#define RECENT_SLOT_EEPROM_ADDR 1022 // only one byte to keep recent saveslot
+#define CONTROLLER_CONFIG_EEPROM_ADDR 900 // keeps controller settings
 
 #define PLUG_INDIC_PIN 7 // pin number of plug pin
 
@@ -67,7 +69,7 @@ int EEPROM_readAnything(int ee, T &value)
 void saveSettings()
 {
     // sava data here
-    EEPROM_writeAnything(EEPROM_ADDR, settings);
+    EEPROM_writeAnything(CONTROLLER_CONFIG_EEPROM_ADDR, settings);
     // EEPROM.put(EEPROM_ADDR, settings);
 }
 
@@ -75,7 +77,7 @@ controllerSettings loadSettings()
 {
     controllerSettings res;
     // load data here
-    EEPROM_readAnything(EEPROM_ADDR, res);
+    EEPROM_readAnything(CONTROLLER_CONFIG_EEPROM_ADDR, res);
     // EEPROM.get(EEPROM_ADDR, settings);
     return res;
 }
