@@ -8,27 +8,28 @@ The range readings are in units of mm. */
 // #include <Wire.h>
 #include <VL53L0X.h>
 
-VL53L0X sensor;
+VL53L0X lidar;
 
 void lidarBegin()
 {
   // Wire.begin();
-  sensor.setTimeout(500);
-  sensor.init();
-  sensor.startContinuous();
+  lidar.setTimeout(500);
+  lidar.init();
+  lidar.startContinuous();
 }
 
 long sensorReading;
-long oldSensorReading;
+// long oldSensorReading;
 
 void readLidarSensor(byte sampleAmt)
 {
-  if (!shiftInReadBit(7))
+  if (!shiftInReadBit(7)) // if toggle switch is set to on
   {
-    int reading = sensor.readRangeContinuousMillimeters() - 70;
+    int reading = lidar.readRangeContinuousMillimeters() - 70;
     if (reading < 1000 && reading)
-      sensorReading = (sensorReading / sampleAmt) * (sampleAmt - 1) + reading / sampleAmt; // running average
-    // if (sensor.timeoutOccurred())
+      sensorReading = reading; //
+      // sensorReading = (sensorReading / sampleAmt) * (sampleAmt - 1) + reading / sampleAmt; // running average
+    // if (lidar.timeoutOccurred())
     // {
     // oledPrint("LIDAR TIMEOUT ERROR", 0, 0, 1);
     // delay(500);

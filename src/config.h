@@ -9,7 +9,9 @@
 
 #define POT_TRSH 8 // knob threshold. must be high enough to get rid of pot/fader noise. 8 is the lowest most setting that can get full 7 bits 
 
-#define KNOB_AVG_LEN 8 // number of samples in running average
+#define KNOB_DEADZONE 8 // this ensures knobs reach extremes. set as low as possible, high enough to reach values 0 and 127
+
+#define KNOB_AVG_LEN 4 // number of samples in running average
 
 #define LED_BRIGHTNESS 50 // ws2812 control var
 
@@ -23,7 +25,7 @@
 
 #define MIDI_DEFAULT_VEL 64 // velocity for controller button presses
 
-#define KNOB_AMT 37 // number of knob objects
+#define KNOB_AMT 31 // number of knob objects
 
 #define MINMAX_MARGIN 10 // limits min to 127-MINMAX_MARGIN and max to MINMAX_MARGIN
 

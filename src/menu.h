@@ -63,6 +63,7 @@ void drawMenu()
 
     else // editing menu item
     {
+        // oledPrint("---------EDIT-00000000000000000000000000000000000000000000000000000--------", 0, 0, 0);
         oledPrint("---------EDIT---------", 0, 0, 0);
         oledPrint("-       back       +", 0, 3, 0);
         // oledPrint("back", 60, 3, 0);
@@ -86,7 +87,7 @@ void drawMenu()
 
             break;
         case 1:
-            oledPrint("Knob " + String(menu.editingKnob) + " CH: " + String(knob[menu.editingKnob].midiChannel), 0, 1, 1);
+            oledPrint("Knob " + String(menu.editingKnob) + " CH: " + String(knob[menu.editingKnob].midiChannel + 1), 0, 1, 1);
             for (byte i = 0; i < KNOB_AMT; i++) // check for conflicting knob
             {
                 if (i != menu.editingKnob)
@@ -183,58 +184,73 @@ void updateMenu()
                 }
                 if (maxButton.fell || (maxButton.didHold && maxButton.pressed))
                 {
-                    byte x = knob[menu.editingKnob].midiCC + 1;
-                    if (x >= 128)
-                        x = 0;
-                    knob[menu.editingKnob].midiCC = x;
+                    menu.currentVal = knob[menu.editingKnob].midiCC + 1;
+                    if (menu.currentVal >= 128)
+                        menu.currentVal = 0;
+                    knob[menu.editingKnob].midiCC = menu.currentVal;
                     drawMenu();
                 }
+                if (knob[menu.editingKnob].hasNew) // can edit menuValue with knob
+                {
+                    menu.currentVal = knob[menu.editingKnob].getVal();
+                    knob[menu.editingKnob].midiCC = knob[menu.editingKnob].getVal();
+                    drawMenu();
+                }
+
                 break;
 
             case 1: // Knob Channel editing
+                menu.currentVal = knob[menu.editingKnob].midiChannel + 1;
                 if (minButton.fell || (minButton.didHold && minButton.pressed))
                 {
-                    menu.currentVal = knob[menu.editingKnob].midiChannel;
+                    menu.currentVal--;
                     if (menu.currentVal == 0)
-                        menu.currentVal = 15;
-                    else
-                        menu.currentVal -= 1;
-                    knob[menu.editingKnob].midiChannel = menu.currentVal;
+                        menu.currentVal = 16;
+                    knob[menu.editingKnob].midiChannel = menu.currentVal - 1;
                     drawMenu();
                 }
                 if (maxButton.fell || (maxButton.didHold && maxButton.pressed))
                 {
-                    menu.currentVal = knob[menu.editingKnob].midiChannel + 1;
-                    if (menu.currentVal >= 15)
-                        menu.currentVal = 0;
-                    knob[menu.editingKnob].midiChannel = menu.currentVal;
+                    // menu.currentVal = knob[menu.editingKnob].midiChannel + 1;
+                    menu.currentVal++;
+                    if (menu.currentVal == 17)
+                        menu.currentVal = 1;
+                    knob[menu.editingKnob].midiChannel = menu.currentVal - 1;
+                    drawMenu();
+                }
+                if (knob[menu.editingKnob].hasNew) // can edit menuValue with knob
+                {
+                    menu.currentVal = knob[menu.editingKnob].getVal();
+                    knob[menu.editingKnob].midiChannel = map(knob[menu.editingKnob].getVal(), 0, 127, 1, 16);
                     drawMenu();
                 }
                 break;
 
-            case 2: // set knob channels
-                if (minButton.fell)
+            case 2:                                                       // set all knobs channels
+                menu.currentVal = knob[menu.editingKnob].midiChannel + 1; // get recent data
+                if (minButton.fell || (minButton.didHold && minButton.pressed))
                 {
-                    menu.currentVal = knob[menu.editingKnob].midiChannel;
+                    menu.currentVal--;
                     if (menu.currentVal == 0)
-                        menu.currentVal = 15;
-                    else
-                        menu.currentVal -= 1;
+                        menu.currentVal = 16;
+                    // knob[menu.editingKnob].midiChannel = menu.currentVal - 1;
                     for (byte i = 0; i < KNOB_AMT; i++)
                     {
-                        knob[i].midiChannel = menu.currentVal;
+                        knob[i].midiChannel = menu.currentVal - 1; // save channel as 0-15, show and send as 1-16
                     }
 
                     drawMenu();
                 }
-                if (maxButton.fell)
+                if (maxButton.fell || (maxButton.didHold && maxButton.pressed))
                 {
-                    menu.currentVal = knob[menu.editingKnob].midiChannel + 1;
-                    if (menu.currentVal >= 15)
-                        menu.currentVal = 0;
+                    menu.currentVal++;
+                    if (menu.currentVal == 17)
+                        menu.currentVal = 1;
+
+                    // knob[menu.editingKnob].midiChannel = menu.currentVal - 1;
                     for (byte i = 0; i < KNOB_AMT; i++)
                     {
-                        knob[i].midiChannel = menu.currentVal;
+                        knob[i].midiChannel = menu.currentVal - 1; // save channel as 0-15, show and send as 1-16
                     }
                     drawMenu();
                 }
@@ -242,17 +258,16 @@ void updateMenu()
                 break;
 
             case 3: // clear all
-                    // oled.clear();
-                    // oledPrint("reset all?", 0, 1, 1);
-                    // oledPrint("ok", 50, 3, 0);
-                    // done = false;
-                    // while(!done)
-                    // {
-                    //     inputValues = shiftInUpdate();
-                    //     updateButtons(millis());
-                    //     if (maxButton.fell)
-                    //     {
-                    //         done = true;
+                // oled.clear();
+                // oledPrint("reset all?", 0, 1, 1);
+                // done = false;
+                // while(!done)
+                // {
+                //     inputValues = shiftInUpdate();
+                //     updateButtons(millis());
+                //     if (maxButton.fell)
+                //     {
+                //         done = true;
                 for (byte i = 0; i < KNOB_AMT; i++)
                 {
                     knob[i].midiChannel = settings.midiChannel;
@@ -261,6 +276,9 @@ void updateMenu()
                     knob[i].min = 0;
                 }
 
+                // oled.clear();
+                oledPrint(" done", 40, 2, 1);
+                myDelay(500);
                 menu.editing = false;
                 drawMenu();
                 //     }
@@ -272,24 +290,26 @@ void updateMenu()
                 break;
 
             case 4: // reset min/max
-                    // oled.clear();
-                    // oledPrint("reset min/max?", 0, 1, 1);
-                    // oledPrint("ok", 50, 3, 0);
-                    // done = false;
-                    // while(!done)
-                    // {
-                    //     inputValues = shiftInUpdate();
-                    //     updateButtons(millis());
-                    //     if (maxButton.fell)
-                    //     {
-                    //         done = true;
+                // oled.clear();
+                // oledPrint("reset min/max?", 0, 1, 1);
+                // oledPrint("ok", 50, 3, 0);
+                // done = false;
+                // while(!done)
+                // {
+                //     inputValues = shiftInUpdate();
+                //     updateButtons(millis());
+                //     if (maxButton.fell)
+                //     {
+                //         done = true;
                 for (byte i = 0; i < KNOB_AMT; i++)
                 {
-                    knob[i].midiChannel = 1;
+                    knob[i].midiChannel = 0;
                     knob[i].midiCC = i;
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }
+                oledPrint(" done", 40, 2, 1);
+                myDelay(500);
                 menu.editing = false;
                 drawMenu();
                 //     }
@@ -304,9 +324,8 @@ void updateMenu()
                 oledPrint("Select Save Slot", 0, 1, 1);
                 s = 100; // 0-3
                 done = false;
-                while (!done) // Todo: make not blockingn
+                while (!done)
                 {
-
                     // get save slot
                     if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[3].fell)
                     {
@@ -320,11 +339,11 @@ void updateMenu()
                         done = true;
                     }
 
-                    updateMidi(); 
+                    updateMidi();
 
                     // exit condition
                     inputValues = shiftInUpdate();
-                    updateButtons(millis());
+                    updateButtons();
                     if (modeButton.fell)
                         done = true;
                 }
@@ -336,6 +355,9 @@ void updateMenu()
                     oledPrint("saving to slot " + String(s + 1), 0, 1, 1);
                     saveConfig(s);
                     myDelay(500);
+                    menu.editing = false;
+                    menu.active = false;
+                    redrawOled = true;
                 }
                 break;
 
@@ -346,7 +368,7 @@ void updateMenu()
                 while (!done)
                 {
                     inputValues = shiftInUpdate();
-                    updateButtons(millis());
+                    updateButtons();
                     if (controllerButton[0].fell || controllerButton[1].fell || controllerButton[2].fell || controllerButton[3].fell)
                     {
                         for (byte i = 0; i < 4; i++)
@@ -372,6 +394,9 @@ void updateMenu()
                     oledPrint("loading slot " + String(s + 1), 0, 1, 1);
                     loadConfig(s);
                     myDelay(500);
+                    menu.editing = false;
+                    menu.active = false;
+                    redrawOled = true;
                 }
                 break;
             } // end of switch(editing menu pos)
@@ -381,14 +406,13 @@ void updateMenu()
                 menu.editing = false;
                 drawMenu();
             }
-
-            // menu timeout
-            if (millis() - menu.t0 > MENU_TIMEOUT)
-            {
-                menu.active = false;
-                menu.editing = false;
-                redrawOled = true;
-            }
+        }
+        // menu timeout
+        if (millis() - menu.t0 > MENU_TIMEOUT)
+        {
+            menu.active = false;
+            menu.editing = false;
+            redrawOled = true;
         }
     }
 }

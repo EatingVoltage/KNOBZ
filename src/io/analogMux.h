@@ -2,12 +2,14 @@
 
 // read analog data from 74hc4067 analog multiplexers
 
+#define MUX_CHANNELS_AMT 30 
+
 // analog in pin definitions
 const int MUX_S[4] = {8, 9, 10, 11};
 #define MUX_0_SIG A0
 #define MUX_1_SIG A1
 
-int mux_in[32]; // readings
+int mux_in[30]; // readings
 
 void muxBegin()
 {
@@ -20,7 +22,7 @@ void muxBegin()
 
 void muxRead()
 {
-    for (int pos = 0; pos < 16; pos++)
+    for (int pos = 0; pos < 15; pos++)
     {
         // set mux pins
         if (pos % 2)
@@ -46,13 +48,13 @@ void muxRead()
         delayMicroseconds(10);
         // do 2 readings
         mux_in[pos] = analogRead(MUX_0_SIG);
-        mux_in[pos + 16] = analogRead(MUX_1_SIG);
+        mux_in[pos + 15] = analogRead(MUX_1_SIG);
     }
 }
 
 void muxDebug()
 {
-    for (byte i = 0; i < 32; i++)
+    for (byte i = 0; i < MUX_CHANNELS_AMT; i++)
     {
         Serial.print(i);
         Serial.print(":");

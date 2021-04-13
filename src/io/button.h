@@ -60,15 +60,15 @@ void updateButton(Button &myButton, bool inputVal, long tFrame) // inputVal fals
     }
 }
 
-void updateButtons(long tFrame)
+void updateButtons()
 {
-    updateButton(minButton, shiftInReadBit(4), tFrame);
-    updateButton(maxButton, shiftInReadBit(5), tFrame);
-    updateButton(modeButton, shiftInReadBit(6), tFrame);
-    updateButton(controllerButton[0], shiftInReadBit(0), tFrame);
-    updateButton(controllerButton[1], shiftInReadBit(1), tFrame);
-    updateButton(controllerButton[2], shiftInReadBit(2), tFrame);
-    updateButton(controllerButton[3], shiftInReadBit(3), tFrame);
+    updateButton(minButton, shiftInReadBit(4), tNow);
+    updateButton(maxButton, shiftInReadBit(5), tNow);
+    updateButton(modeButton, shiftInReadBit(6), tNow);
+    updateButton(controllerButton[0], shiftInReadBit(0), tNow);
+    updateButton(controllerButton[1], shiftInReadBit(1), tNow);
+    updateButton(controllerButton[2], shiftInReadBit(2), tNow);
+    updateButton(controllerButton[3], shiftInReadBit(3), tNow);
 
     // debugging
 

@@ -1,12 +1,20 @@
 todo:
 
--add display timeout
--remove bug in saving/loading
--speed up oled using TWBR = 12; // 400 khz faster I2C clock 
+-optimize draw in menu. just redraw parts of screen in some cases
+    -fix text positions
 -improve EEPROM initializing routine if its the first time
+-load settings.midiChannel (for note - buttons) from eeprom
 -add / test lidar sensor.
 
+code optimization:
+-button.h - maybe not all vars are used. omit unused functionality
+
 done:
+-overshoot knobs range a bit, so knobs will reach extremes garanteed
+-fix display timeout
+-remove bug in saving/loading
+-track / fix midichannels. 0 blocks midi transmission on Serial1. use 1-16 for uartmidi and also for menu
+-fix value when setting min / max - should send absolute value. 
 -add set channels and ccs to default at first startup
 -add repeat on change menu item
 -removed all delay(), converted code to be non-blocking, thus all midi data should be forwarded
