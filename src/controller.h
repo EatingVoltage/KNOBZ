@@ -25,7 +25,6 @@ void knob_c::update(int reading)
 {
     // running average
     sum = (sum * (KNOB_AVG_LEN - 1) / KNOB_AVG_LEN) + reading;
-    // int x = (sum / KNOB_AVG_LEN);                                           // get single reading from avg
     // get reading:
     int x = constrain(map(sum / KNOB_AVG_LEN, 0, 1023, 0, 1023 + 2 * KNOB_DEADZONE) - KNOB_DEADZONE, 0, 1023); // mapping out dead area
 
@@ -54,15 +53,12 @@ void updateKnobs()
 
     // multiplexed inputs
     for (byte i = 0; i < 30; i++)
-    // for (byte i = 0; i < 1; i++)
     {
-        // int x = mux_in[i];
         knob[i].update(1023 - mux_in[i]);
     }
 
     // air knob - lidar sensor
-    // int x = constrain(sensorReading, 0, LIDAR_UPPER_LIMIT);
-    // knob[30].update(map(x, 0, LIDAR_UPPER_LIMIT, 1023, 0));
+    knob[30].update(map(constrain(sensorReading, 0, LIDAR_UPPER_LIMIT), 0, LIDAR_UPPER_LIMIT, 0, 1023));
     // debugLidarSensor();
 
     // process readings
