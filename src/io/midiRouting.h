@@ -5,23 +5,21 @@ void forwardMidiUSBtoUART()
   while (USBMIDI.available())
   {
     Serial1.write(USBMIDI.read());
-    // midiOutIndicator.tick();
-    outLed.trigger(millis());
-    // USBIndicator.tick();
-    usbLed.trigger(millis());
+    outLed.trigger();
+    usbLed.trigger();
   }
   Serial1.flush();
 }
 
-void forwardUARTMidi(long tFrame)
+void forwardUARTMidi()
 {
   while (Serial1.available())
   {
     byte msg = Serial1.read();
     USBMIDI.write(msg);
     Serial1.write(msg);
-    inLed.trigger(tFrame);
-    usbLed.trigger(tFrame);
+    inLed.trigger();
+    usbLed.trigger();
 
   }
   USBMIDI.flush();

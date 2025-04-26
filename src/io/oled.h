@@ -11,6 +11,7 @@
 
 // 0X3C+SA0 - 0x3C or 0x3D
 #define SSD1306_I2C_ADDRESS 0x3C
+// #define SSD1306_I2C_ADDRESS 0x3D
 
 SSD1306AsciiAvrI2c oled;
 
@@ -26,19 +27,16 @@ void oledPrint(String text, byte col=0, byte row=0, byte style=0)
     {
     case 0:
         oled.setFont(font5x7);
-        // oled.set1X();
         break;
 
     case 1:
         oled.setFont(ZevvPeep8x16);
-        // oled.set1X();
         break;
 
 // TODO case 2
 
     case 3:
         oled.setFont(Arial_bold_14);
-        // oled.set1X();
         break;
 
     default:

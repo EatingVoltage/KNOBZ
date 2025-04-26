@@ -10,8 +10,8 @@ private:
 
 public:
     // Ledling_c(/* args */);
-    void trigger(long tNow);
-    void update(long tNow);
+    void trigger();
+    void update();
     byte read();
 };
 
@@ -19,9 +19,9 @@ public:
 // {
 // }
 
-void Ledling_c::trigger(long tNow)
+void Ledling_c::trigger()
 {
-    tTriggered = tNow;
+    tTriggered = millis();
 }
 
 byte Ledling_c::read()
@@ -29,10 +29,10 @@ byte Ledling_c::read()
     return sat;
 }
 
-void Ledling_c::update(long tNow)
+void Ledling_c::update()
 {
-    if (tNow < tTriggered + 200)
-        sat = constrain(map(tNow, tTriggered, tTriggered + 200, 0, 260), 0, 200);
+    if (millis() < tTriggered + 200)
+        sat = constrain(map(millis(), tTriggered, tTriggered + 200, 0, 260), 0, 200);
     else sat = 255;
 }
 
@@ -42,13 +42,13 @@ Ledling_c outLed;
 
 void updateLedlings()
 {
-    usbLed.update(tNow);
-    inLed.update(tNow);
-    outLed.update(tNow);
+    usbLed.update();
+    inLed.update();
+    outLed.update();
 }
 
-void tickMidiOutIndicator(long tNow)
+void tickMidiOutIndicator()
 {
-    if(!digitalRead(PLUG_INDIC_PIN)) outLed.trigger(tNow);
+    if(!digitalRead(PLUG_INDIC_PIN)) outLed.trigger();
     // Serial.println(digitalRead(PLUG_INDIC_PIN));
 }

@@ -1,12 +1,21 @@
 #include <Arduino.h>
 
+String fNum(byte _msg, byte targetLen = 2) // adds " " spaces to number
+{
+    String res = String(_msg);
+    while (res.length() < 3)
+        res = " " + res;
+    return res;
+}
+
 void showHeader() // shows cc and channel on top of oled
 {
     oledPrint("CC: " + String(knob[activeKnob].midiCC));
 
-    byte x = 92;
-    if (knob[activeKnob].midiChannel+1 < 10) x += 8;
-    oledPrint("CH: " + String(knob[activeKnob].midiChannel+1), x, 0, 0);
+    byte x = 90;
+    if (knob[activeKnob].midiChannel + 1 < 10)
+        x += 8;
+    oledPrint("CH: " + String(knob[activeKnob].midiChannel + 1), x, 0, 0);
     // oledPrint("CH: " + String(knob[activeKnob].midiChannel+1), 95, 0, 0);
 }
 
@@ -14,30 +23,13 @@ void showHome()
 {
     oled.clear();
     showHeader();
-     oledPrint("MIN: " + String(knob[activeKnob].min), 0, 3, 0);
-    oledPrint("MAX: " + String(knob[activeKnob].max), 80, 3, 0);
+    oledPrint("MIN:" + fNum(knob[activeKnob].min, 3), 0, 3, 0);
+    oledPrint("MAX:" + fNum(knob[activeKnob].max, 3), 85, 3, 0);
 
     byte x = 58;
-    if (activeKnob < 10) x += 4;
-    oledPrint(String(activeKnob), x, 1, 3);
-}
-
-void showMin()
-{
-    oled.clear();
-    showHeader();
-    oledPrint("MIN:" + String(knob[activeKnob].min), 0, 2, 1);
-    oledPrint("MAX: " + String(knob[activeKnob].max), 80, 3, 0);
-    oledPrint(String(activeKnob), 58, 0, 3);
-}
-
-void showMax()
-{
-    oled.clear();
-    showHeader();
-    oledPrint("MIN: " + String(knob[activeKnob].min), 0, 3, 0);
-    oledPrint("MAX:" + String(knob[activeKnob].max), 74, 2, 1);
-    oledPrint(String(activeKnob), 58, 0, 3);
+    if (activeKnob < 10)
+        x += 4;
+    oledPrint(String(activeKnob+1), x, 0, 3);
 }
 
 byte oldActiveKnob = 0;
@@ -48,20 +40,18 @@ void drawHome()
     {
         oldActiveKnob = activeKnob;
         if (minButton.pressed)
-            showMin();
+            oledPrint("MIN:" + fNum(knob[activeKnob].min, 3), 0, 2, 1);
         else if (maxButton.pressed)
-            showMax();
+            oledPrint("MAX:" + fNum(knob[activeKnob].max, 3), 74, 2, 1);
         else
             showHome();
         redrawOled = false; // reset flag
     }
 
-    if (minButton.fell)
-        showMin();
-    else if (minButton.rose)
-        showHome();
+    else if (minButton.fell)
+        oledPrint("MIN:" + fNum(knob[activeKnob].min, 3), 0, 2, 1);
     else if (maxButton.fell)
-        showMax();
-    else if (maxButton.rose)
+        oledPrint("MAX:" + fNum(knob[activeKnob].max, 3), 74, 2, 1);
+    else if (minButton.rose || maxButton.rose)
         showHome();
 }

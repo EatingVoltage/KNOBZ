@@ -19,7 +19,6 @@ void lidarBegin()
 }
 
 long sensorReading;
-// long oldSensorReading;
 
 void readLidarSensor(byte sampleAmt)
 {
