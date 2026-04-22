@@ -2,8 +2,6 @@
 
 #include <config.h>
 
-unsigned long tNow = 0;
-
 // // ssd1306 oled
 #include <Wire.h> // for ssd1306
 #include <SPI.h>  // for ssd1306
@@ -34,7 +32,6 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 // global vars:
 byte uiState = 0; // 0= home, 1 = editing min, 2 = editing max
 byte hue = 0;
-// unsigned long tFrame = 0;
 
 bool redrawOled = false; // flag to trigger oled redraw
 
@@ -45,7 +42,7 @@ void updateMidi() // read and forward usb and din midi
 
   // forward midi
   forwardMidiUSBtoUART();
-  forwardUARTMidi(millis());
+  forwardUARTMidi();
 }
 
 void myDelay(unsigned long dur) // delay without blocking midi forwarding
@@ -53,14 +50,7 @@ void myDelay(unsigned long dur) // delay without blocking midi forwarding
   long t0 = millis();
   while (millis() - t0 < dur)
   {
-    // update here everything that needs updating while delay
-
-    // output midi
-    USBMIDI.poll(); // required to call in loop
-
-    // forward midi
-    forwardMidiUSBtoUART();
-    forwardUARTMidi(millis());
+    updateMidi();
   }
 }
 
@@ -82,25 +72,26 @@ void setup()
 
   if (slot > 3) // initialising memory - should only run the first time the device boots
   {
-    oledPrint("welcome");
-    slot = 0;
-    EEPROM.write(1023, 0); // setting slot 0 as active slot
+    // commented out for memory saving. lets see if it works.
+    // oledPrint("Welcome");
+    // slot = 0;
+    // EEPROM.write(1023, 0); // setting slot 0 as active slot
 
-    for (byte i = 0; i < KNOB_AMT; i++) //set channels to default
-    {
-      knob[i].midiChannel = 0; // default
-      knob[i].midiCC = i;
-      knob[i].max = 127;
-      knob[i].min = 0;
-    }
+    // for (byte i = 0; i < KNOB_AMT; i++) //set channels to default
+    // {
+    //   knob[i].midiChannel = 0; // default
+    //   knob[i].midiCC = i;
+    //   knob[i].max = 127;
+    //   knob[i].min = 0;
+    // }
 
-    for (byte i = 0; i < 4; i++)
-    {
-      saveConfig(i); // overwrite all saveslots
-    }
+    // for (byte i = 0; i < 4; i++)
+    // {
+    //   saveConfig(i); // overwrite all saveslots
+    // }
 
-    settings.midiChannel = 0;
-    saveSettings();
+    // settings.midiChannel = 0;
+    // saveSettings();
   }
 
   else // regular startup
@@ -108,7 +99,6 @@ void setup()
     loadConfig(slot);
     settings = loadSettings();
   }
-  // settings.midiChannel = 0; // todo: load from config
 
   MIDI.begin();
 
@@ -134,30 +124,27 @@ void setup()
   controllerBegin();
 
   // startup anim
-  // oledPrint("-eatingVoltage-", 15, 0, 0);
-  // delay(800);
-  // oled.setCol(0);
-  // oled.clearToEOL();
   String s = "KNOBZ";
   oled.setCursor(42, 0);
   oled.setFont(Arial_bold_14);
   for (byte i = 0; i < s.length(); i++)
   {
     oled.print(s[i]);
-    delay(200);
+    delay(60);
   }
-  oledPrint("-eatingVoltage-", 20, 3, 0);
+  delay(600);
+  oledPrint("- by eatingVoltage -", 5, 2, 0);
+  oledPrint("FW b0.1 4/25", 30, 3, 0);
   delay(800);
+  oled.setCursor(0, 3);
+  oled.clearToEOL();
+  oledPrint("Loading Slot " + String(slot + 1), 0, 3, 0);
+  delay(800);
+  // oled.clearToEOL();
+  oledPrint(" ok.", 105, 3, 0);
 
-  // oledPrint("KNOBZ", 42, 0, 3);
-  delay(500);
-  oledPrint("loading slot " + String(slot + 1), 0, 3, 0);
-  oled.clearToEOL();
-  delay(1000);
-  oledPrint("ok.", 105, 3, 0);
-  delay(500);
-  oled.setCol(0);
-  oled.clearToEOL();
+  // oled.setCol(0);
+  // oled.clearToEOL();
 
   oled.setCursor(0, 3);
   for (byte j = 0; j < 255; j++)
@@ -168,11 +155,12 @@ void setup()
     {
       knob[i].hasNew = false;
     }
+    updateLedlings();
     animateNeopixel(j);
     pixels.show();
     if (j % (255/24) == 1)
       oled.print(".");
-    delay(2);
+    delay(1);
   }
 
   // hold menu button to inhibit starting. upload new firmware this way
@@ -182,15 +170,12 @@ void setup()
     delay(200);
   }
 
-  // oled.invertDisplay(1);
-  // delay(1000);
-  oled.clear();
+  redrawOled = true;
+  drawHome();
 }
 
 void loop()
 {
-  tNow = millis();
-
   // get fader & knobs values
   muxRead();
   // muxDebug(); // get raw values to serial
@@ -199,7 +184,7 @@ void loop()
   inputValues = shiftInUpdate();
   updateButtons();
 
-  readLidarSensor(8); // set running average sampling amount - slew rate limiter
+  readLidarSensor(8); // set running average sampling amount - slew rate limiter. 8 works well
 
   // hold menu button to send all knobs
   if (modeButton.held) // hacky way to send all knob states. manipulates data at mux_in
@@ -224,19 +209,13 @@ void loop()
   // write to Leds
   updateLedlings();
   animateNeopixel();
-  // midiInIndicator.update();
-  // midiOutIndicator.update();
-  // USBIndicator.update();
   pixels.show();
 
   // write to oled
   if (!menu.active) // menu is drawn by itself, so only draw homescreen when not in menu
     drawHome();
-
-  // Pause before next pass through loop
-  // delay(500);
-  // delay(5);
 }
+
 
 // performance testing
 

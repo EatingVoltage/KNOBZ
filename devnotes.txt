@@ -1,16 +1,23 @@
 todo:
 
+-midi channel is displayed incorrectly. shown channel + 1 is actual channel. shown channel 16 is actually channel 0. Fix this behaviour.
 -check automatic loading of recent slot at setup()
--optimize draw in menu. just redraw parts of screen in some cases
-    -fix text positions
 -improve EEPROM initializing routine if its the first time
--load settings.midiChannel (for note - buttons) from eeprom
--add / test lidar sensor.
+-add settings.midiChannel (for note - buttons) menu entry or way to set
+-optimize draw in menu. just redraw parts of screen in some cases
+    -stop flickering in main screen if moving two knobs at the same time: at some timer to limit the changing of current knob. 
+    -stop flickering in menu. incorporate oled writing stuff in menu loop directly to only rewrite the current changing number
+-cycle led colour from millis()
 
 code optimization:
 -button.h - maybe not all vars are used. omit unused functionality
 
 done:
+-change note button behaviour: note on on press, note off on release
+-tick indicator leds upon note button press
+-add / test lidar sensor.
+-load settings.midiChannel (for note - buttons) from eeprom
+-fix oled text positions
 -overshoot knobs range a bit, so knobs will reach extremes garanteed
 -fix display timeout
 -remove bug in saving/loading
@@ -44,8 +51,8 @@ done:
 -buttons
 -midi activity led
 -usb midi
+-add smoothing option (maybe hardcode to knobs only)
+-improve knob filtering: average to full 10 bits, then if(difference is high enough) update value.
 
 dream features:
--add smoothing option (maybe hardcode to knobs only)
 -name presets / show preset name on startup
--improve knob filtering: average to full 10 bits, then if(difference is high enough) update value.

@@ -26,7 +26,6 @@ Button controllerButton[BUTTON_AMT];
 
 void updateButton(Button &myButton, bool inputVal, long tFrame) // inputVal false = button pressed down
 {
-
     // set vars to default state
     myButton.tapped = false;
     myButton.held = false;
@@ -62,23 +61,34 @@ void updateButton(Button &myButton, bool inputVal, long tFrame) // inputVal fals
 
 void updateButtons()
 {
-    updateButton(minButton, shiftInReadBit(4), tNow);
-    updateButton(maxButton, shiftInReadBit(5), tNow);
-    updateButton(modeButton, shiftInReadBit(6), tNow);
-    updateButton(controllerButton[0], shiftInReadBit(0), tNow);
-    updateButton(controllerButton[1], shiftInReadBit(1), tNow);
-    updateButton(controllerButton[2], shiftInReadBit(2), tNow);
-    updateButton(controllerButton[3], shiftInReadBit(3), tNow);
+    updateButton(minButton, shiftInReadBit(4), millis());
+    updateButton(maxButton, shiftInReadBit(5), millis());
+    updateButton(modeButton, shiftInReadBit(6), millis());
+    updateButton(controllerButton[0], shiftInReadBit(0), millis());
+    updateButton(controllerButton[1], shiftInReadBit(1), millis());
+    updateButton(controllerButton[2], shiftInReadBit(2), millis());
+    updateButton(controllerButton[3], shiftInReadBit(3), millis());
+}
+
+void debugButtons()
+{
 
     // debugging
+    for (byte i = 0; i < 7; i++)
+    {
+        if (shiftInReadBit(i))
+            oledPrint(String(i), i * 20, 1, 0);
+        else
+            oledPrint("  ", i * 15, 1, 0);
+    }
 
     // if (minButton.pressed)
-    //     Serial.println("minButton.pressed");
-    // if (maxButton.pressed)
-    //     Serial.println("maxButton.pressed");
-    // if (modeButton.pressed)
-    //     Serial.println("modeButton.pressed");
-
+    //     oledPrint("min");
+    // else if (maxButton.pressed)
+    //     oledPrint("max");
+    // else if (modeButton.pressed)
+    //     oledPrint("mod");
+    // else oledPrint("   ");
     // for (byte i = 0; i < 4; i++)
     // {
     //     if (controllerButton[i].fell)

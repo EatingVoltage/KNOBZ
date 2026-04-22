@@ -14,6 +14,18 @@ struct menu_t
 
 menu_t menu;
 
+void checkConflict()
+{
+    for (byte i = 0; i < KNOB_AMT; i++)
+    {
+        if ((knob[menu.editingKnob].midiCC == knob[i].midiCC) && (knob[menu.editingKnob].midiChannel == knob[i].midiChannel) && i != menu.editingKnob)
+        {
+            // menu.ccConflict = true;
+            oledPrint("! CC/CH taken !", 25, 0, 0);
+        }
+    }
+}
+
 void drawMenu()
 {
     menu.t0 = millis(); // reset menu timer on every change
@@ -29,23 +41,23 @@ void drawMenu()
         switch (menu.pos)
         {
         case 0:
-            oledPrint("Set Knob " + String(menu.editingKnob) + " CC." + String(knob[menu.editingKnob].midiCC), 0, 1, 1);
+            oledPrint("Set Knob " + String(menu.editingKnob + 1) + " CC.", 0, 1, 1);
             break;
 
         case 1:
-            oledPrint("Set Knob " + String(menu.editingKnob) + " CH.", 0, 1, 1);
+            oledPrint("Set Knob " + String(menu.editingKnob + 1) + " CH.", 0, 1, 1);
             break;
 
         case 2:
-            oledPrint("Set All Channels", 0, 1, 1);
+            oledPrint("Set all Channels", 0, 1, 1);
             break;
 
         case 3:
-            oledPrint("Clear All Knobs", 0, 1, 1);
+            oledPrint("Clear all Knobs", 0, 1, 1);
             break;
 
         case 4:
-            oledPrint("Clear All MIN/MAX", 0, 1, 1);
+            oledPrint("Clear all MIN/MAX", 0, 1, 1);
             break;
 
         case 5:
@@ -63,60 +75,28 @@ void drawMenu()
 
     else // editing menu item
     {
-        // oledPrint("---------EDIT-00000000000000000000000000000000000000000000000000000--------", 0, 0, 0);
         oledPrint("---------EDIT---------", 0, 0, 0);
-        oledPrint("-       back       +", 0, 3, 0);
+        oledPrint("-        set        +", 0, 3, 0);
         // oledPrint("back", 60, 3, 0);
         // oledPrint("+", 105, 3•, 0);
-
+        
         switch (menu.pos)
         {
-        case 0:
-            oledPrint("Knob " + String(menu.editingKnob) + " CC: " + String(knob[menu.editingKnob].midiCC), 0, 1, 1);
-            for (byte i = 0; i < KNOB_AMT; i++)
-            {
-                if (i != menu.editingKnob)
-                {
-                    if ((knob[menu.editingKnob].midiCC == knob[i].midiCC) && (knob[menu.editingKnob].midiChannel == knob[i].midiChannel))
-                    {
-                        // menu.ccConflict = true;
-                        oledPrint("! CC/CH taken !", 25, 0, 0);
-                    }
-                }
-            }
-
+            case 0:
+            oledPrint("Knob " + String(menu.editingKnob + 1) + " CC: " + String(knob[menu.editingKnob].midiCC), 0, 1, 1); // cc range is from 0 - 127
+            checkConflict();
             break;
-        case 1:
-            oledPrint("Knob " + String(menu.editingKnob) + " CH: " + String(knob[menu.editingKnob].midiChannel + 1), 0, 1, 1);
-            for (byte i = 0; i < KNOB_AMT; i++) // check for conflicting knob
-            {
-                if (i != menu.editingKnob)
-                {
-                    if ((knob[menu.editingKnob].midiCC == knob[i].midiCC) && (knob[menu.editingKnob].midiChannel == knob[i].midiChannel))
-                    {
-                        oledPrint("! CC/CH taken !", 25, 0, 0);
-                    }
-                }
-            }
+            case 1:
+            oledPrint("Knob " + String(menu.editingKnob + 1) + " CH: " + String(knob[menu.editingKnob].midiChannel + 1), 0, 1, 1); // midi channel range is from 1-16
+            checkConflict();
             break;
-        case 2:
-            // menu.currentVal = 0;
+            case 2:
             oledPrint("set all ch: " + String(menu.currentVal), 0, 1, 1);
             break;
-            // case 3:
-            // oledPrint("clear all?", 0, 1, 1);
-            // break;
-            // case 4: //
-            // oledPrint("reset min/max?", 0, 1, 1);
-            // break;
-
-            // case 5: // save
-            // break;
-
-            // case 6: // load
-            // break;
-
-        default:
+            case 5: // selecting save slot
+            oledPrint("         back         ", 0, 3, 0);
+            break;
+            default:
             break;
         }
     }
@@ -233,7 +213,6 @@ void updateMenu()
                     menu.currentVal--;
                     if (menu.currentVal == 0)
                         menu.currentVal = 16;
-                    // knob[menu.editingKnob].midiChannel = menu.currentVal - 1;
                     for (byte i = 0; i < KNOB_AMT; i++)
                     {
                         knob[i].midiChannel = menu.currentVal - 1; // save channel as 0-15, show and send as 1-16
@@ -275,36 +254,17 @@ void updateMenu()
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }
-
-                // oled.clear();
                 oledPrint(" done", 40, 2, 1);
                 myDelay(500);
                 menu.editing = false;
                 drawMenu();
-                //     }
-                //     if(minButton.fell)
-                //     {
-                //         done = true;
-                //     }
-                // }
                 break;
 
             case 4: // reset min/max
-                // oled.clear();
-                // oledPrint("reset min/max?", 0, 1, 1);
-                // oledPrint("ok", 50, 3, 0);
-                // done = false;
-                // while(!done)
-                // {
-                //     inputValues = shiftInUpdate();
-                //     updateButtons(millis());
-                //     if (maxButton.fell)
-                //     {
-                //         done = true;
                 for (byte i = 0; i < KNOB_AMT; i++)
                 {
                     knob[i].midiChannel = 0;
-                    knob[i].midiCC = i;
+                    knob[i].midiCC = i+1;
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }
@@ -312,12 +272,6 @@ void updateMenu()
                 myDelay(500);
                 menu.editing = false;
                 drawMenu();
-                //     }
-                //     if(minButton.fell)
-                //     {
-                //         done = true;
-                //     }
-                // }
                 break;
 
             case 5: // save controller state
@@ -413,6 +367,7 @@ void updateMenu()
             menu.active = false;
             menu.editing = false;
             redrawOled = true;
+            // Serial.println("exiting menu.");
         }
     }
 }
