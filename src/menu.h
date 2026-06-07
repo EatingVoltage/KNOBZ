@@ -147,18 +147,20 @@ void drawMenu()
 // draws the name-entry field: full NAME_LEN width, x-centered, with a cursor
 // marker beneath the active position. show=false blanks the name (blink frame).
 // redraws in place (no oled.clear()) to avoid flicker on every char/blink frame.
-// caller clears the screen once before the first draw. the fixed-width name field
-// overwrites itself; only the cursor row is region-cleared so the marker can move.
+// caller clears the screen and draws the row-3 legend once before the first draw.
+// the active character is shown inverted (a filled block on a blank slot) instead
+// of a separate marker row, freeing row 3 for the <- ok -> legend.
 void drawNameEntry(byte cursor, bool show)
 {
-    oledPrint(F("name your preset:"), 0, 0, 0); // static header, redrawn in place
-    byte col = (128 - NAME_LEN * 8) / 2;        // fixed-width field so the marker stays aligned
+    oledPrint(F("- name your preset -"), 4, 0, 0); // static header, x-centered (20 chars * 6px), redrawn in place
+    byte col = (128 - NAME_LEN * 8) / 2;        // fixed-width field, centered
     oledAt(col, 1, 1);                          // big field on rows 1-2
     for (byte i = 0; i < NAME_LEN; i++)
+    {
+        oled.setInvertMode(show && i == cursor); // highlight the active char
         oled.print(show ? presetName[i] : ' ');
-    oled.clear(col, col + NAME_LEN * 8 - 1, 3, 3); // wipe old marker
-    oledAt(col + cursor * 8, 3, 0);                 // cursor marker on row 3
-    oled.print(F("^"));
+    }
+    oled.setInvertMode(false);
 }
 
 // name-entry alphabet: blank (bottom) | A-Z | 0-9 | symbols | blank (top).
@@ -177,7 +179,8 @@ void enterName()
     long holdT0 = 0;
     long blinkT0 = 0;
     bool show = true;
-    oled.clear(); // clear once; drawNameEntry redraws in place afterwards
+    oled.clear();                                  // clear once; drawNameEntry redraws in place afterwards
+    oledPrint(F("<-       ok       ->"), 0, 3, 0); // static control legend: min=left, mode(hold)=ok, max=right
     drawNameEntry(cursor, show);
 
     while (true)
