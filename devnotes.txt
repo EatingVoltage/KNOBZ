@@ -1,15 +1,11 @@
 todo:
 
--midi channel is displayed incorrectly. shown channel + 1 is actual channel. shown channel 16 is actually channel 0. Fix this behaviour.
--check automatic loading of recent slot at setup()
--improve EEPROM initializing routine if its the first time
--add settings.midiChannel (for note - buttons) menu entry or way to set
+-check automatic loading of recent slot at setup(), should it be working?
 -optimize draw in menu. just redraw parts of screen in some cases
     -stop flickering in main screen if moving two knobs at the same time: at some timer to limit the changing of current knob. 
     -stop flickering in menu. incorporate oled writing stuff in menu loop directly to only rewrite the current changing number
 -cycle led colour from millis()
 -add a menu option to change the midichannel for the four buttons. keep this channel in eeprom as part of savestate. /grill-me
--on very first startup all datapoints are set to 255. when this is detected, init all four savestates. /grill-me
 
 code optimization:
 -button.h - maybe not all vars are used. omit unused functionality

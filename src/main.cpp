@@ -72,26 +72,25 @@ void setup()
 
   if (slot > 3) // initialising memory - should only run the first time the device boots
   {
-    // commented out for memory saving. lets see if it works.
-    // oledPrint("Welcome");
-    // slot = 0;
-    // EEPROM.write(1023, 0); // setting slot 0 as active slot
+    slot = 0;
 
-    // for (byte i = 0; i < KNOB_AMT; i++) //set channels to default
-    // {
-    //   knob[i].midiChannel = 0; // default
-    //   knob[i].midiCC = i;
-    //   knob[i].max = 127;
-    //   knob[i].min = 0;
-    // }
+    for (byte i = 0; i < KNOB_AMT; i++) // set knobs to defaults
+    {
+      knob[i].midiChannel = 0;
+      knob[i].midiCC = i;
+      knob[i].min = 0;
+      knob[i].max = 127;
+    }
 
-    // for (byte i = 0; i < 4; i++)
-    // {
-    //   saveConfig(i); // overwrite all saveslots
-    // }
+    for (byte i = 0; i < 4; i++)
+    {
+      saveConfig(i); // seed all four save slots with the defaults
+    }
 
-    // settings.midiChannel = 0;
-    // saveSettings();
+    settings.midiChannel = 0;
+    saveSettings();
+
+    EEPROM.update(RECENT_SLOT_EEPROM_ADDR, slot); // boot into slot 0 (saveConfig left it at 3)
   }
 
   else // regular startup
