@@ -168,13 +168,12 @@ void drawNameEntry(byte cursor, bool show)
 const char charset[] PROGMEM = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+&#!?.*=/ ";
 #define CHARSET_LEN 48 // glyph count incl. both blank ends (= sizeof(charset) - 1)
 
-// letter-input routine. starts blank. any knob sets the char at the cursor
+// letter-input routine. caller pre-fills presetName (blank for a new slot, the
+// existing name when resaving). any knob sets the char at the cursor
 // (knob 0-127 -> charset); min/max move the cursor; hold mode >=2s to confirm.
 // no abort - you commit to a name (menu timeout is the only passive exit upstream).
 void enterName()
 {
-    for (byte i = 0; i < NAME_LEN; i++)
-        presetName[i] = ' ';
     byte cursor = 0;
     long holdT0 = 0;
     long blinkT0 = 0;
@@ -222,6 +221,7 @@ void enterName()
                 blinkT0 = millis();
                 show = false;
                 dirty = true;
+                oledPrint(F("<-    hold...     ->"), 0, 3, 0); // prompt to keep holding
             }
             if (millis() - holdT0 > 2000)
                 break; // confirm
@@ -237,6 +237,7 @@ void enterName()
             holdT0 = 0;
             show = true;
             dirty = true;
+            oledPrint(F("<-       ok       ->"), 0, 3, 0); // restore legend
         }
 
         if (dirty)
@@ -467,7 +468,8 @@ void updateMenu()
                 // save the data
                 if (s != 100) // validation
                 {
-                    enterName(); // name the preset before writing (fills presetName)
+                    readSlotName(s); // pre-fill with the slot's existing name (blank if unnamed)
+                    enterName();     // edit/confirm the name before writing
                     oled.clear();
                     oledAt(0, 1, 1);
                     oled.print(F("saving to slot "));

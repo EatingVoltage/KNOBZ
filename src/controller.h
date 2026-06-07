@@ -154,6 +154,21 @@ void saveConfig(byte slot) // slots 0-3
         EEPROM.update(NAME_EEPROM_ADDR + slot * NAME_LEN + i, presetName[i]);
 }
 
+void readSlotName(byte slot) // fills presetName from a slot's stored name (blank if unnamed/legacy). does NOT touch knob config
+{
+    int naddr = NAME_EEPROM_ADDR + slot * NAME_LEN;
+    if (EEPROM.read(naddr) == 0xFF) // unnamed / legacy slot -> blank name
+    {
+        for (byte i = 0; i < NAME_LEN; i++)
+            presetName[i] = ' ';
+    }
+    else
+    {
+        for (byte i = 0; i < NAME_LEN; i++)
+            presetName[i] = EEPROM.read(naddr + i);
+    }
+}
+
 void loadConfig(byte slot)
 {
     EEPROM.update(RECENT_SLOT_EEPROM_ADDR, slot); // saving last loaded slot number for startup loading recent preset
@@ -175,17 +190,7 @@ void loadConfig(byte slot)
     settings.midiChannel = (bch > 15) ? 0 : bch; // guard virgin/old-format slots (0xFF) -> channel 1
     // oledPrint("channel: " + saveState.midiChannel);
 
-    int naddr = NAME_EEPROM_ADDR + slot * NAME_LEN;
-    if (EEPROM.read(naddr) == 0xFF) // unnamed / legacy slot -> blank name
-    {
-        for (byte i = 0; i < NAME_LEN; i++)
-            presetName[i] = ' ';
-    }
-    else
-    {
-        for (byte i = 0; i < NAME_LEN; i++)
-            presetName[i] = EEPROM.read(naddr + i);
-    }
+    readSlotName(slot); // preset name travels with the slot
 }
 
 void controllerBegin() // set midi config
