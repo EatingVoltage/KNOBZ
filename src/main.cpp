@@ -74,6 +74,9 @@ void setup()
   {
     slot = 0;
 
+    for (byte i = 0; i < NAME_LEN; i++) // seed slots with blank names
+      presetName[i] = ' ';
+
     for (byte i = 0; i < KNOB_AMT; i++) // set knobs to defaults
     {
       knob[i].midiChannel = 0;
@@ -135,19 +138,12 @@ void setup()
   oledPrint(F("- by eatingVoltage -"), 5, 2, 0);
   oledPrint(F("FW b0.2 6/26"), 30, 3, 0);
   delay(800);
-  oled.setCursor(0, 3);
-  oled.clearToEOL();
-  oledAt(0, 3, 0);
-  oled.print(F("Loading Slot "));
+
+  oled.clear();
+  oledPrint(F("Loading Slot "), 16, 0, 0);
   oled.print(slot + 1);
-  delay(800);
-  // oled.clearToEOL();
-  oledPrint(F(" ok."), 105, 3, 0);
+  drawNameCentered(2, true); // preset name x-centered, revealed letter-by-letter
 
-  // oled.setCol(0);
-  // oled.clearToEOL();
-
-  oled.setCursor(0, 3);
   for (byte j = 0; j < 255; j++)
   {
     muxRead();
@@ -159,8 +155,6 @@ void setup()
     updateLedlings();
     animateNeopixel(j);
     pixels.show();
-    if (j % (255/24) == 1)
-      oled.print(".");
     delay(1);
   }
 

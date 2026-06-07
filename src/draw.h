@@ -1,5 +1,25 @@
 #include <Arduino.h>
 
+// draws presetName x-centered in the big font on the given row.
+// animate = reveal letter-by-letter (~60ms/char, like the KNOBZ splash).
+// trailing blanks are trimmed; an all-blank name draws nothing.
+void drawNameCentered(byte row, bool animate)
+{
+    byte len = NAME_LEN;
+    while (len > 0 && presetName[len - 1] == ' ')
+        len--;
+    if (len == 0)
+        return; // unnamed slot -> leave the line blank
+
+    oledAt((128 - len * 8) / 2, row, 1); // ZevvPeep8x16 is 8px wide
+    for (byte i = 0; i < len; i++)
+    {
+        oled.print(presetName[i]);
+        if (animate)
+            myDelay(60);
+    }
+}
+
 void showHeader() // shows cc and channel on top of oled
 {
     oledAt(0, 0, 0);

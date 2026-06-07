@@ -45,6 +45,8 @@ byte knob_c::getVal()
 
 knob_c knob[KNOB_AMT];
 
+char presetName[NAME_LEN]; // current slot's name, space-padded (blank = ' ')
+
 byte activeKnob = 0;
 
 void updateKnobs()
@@ -145,6 +147,8 @@ void saveConfig(byte slot) // slots 0-3
         EEPROM_writeAnything(addr, saveState);
     }
     EEPROM.update(BUTTON_CHANNEL_EEPROM_ADDR + slot, settings.midiChannel); // note-button channel travels with the slot
+    for (byte i = 0; i < NAME_LEN; i++)                                      // preset name travels with the slot
+        EEPROM.update(NAME_EEPROM_ADDR + slot * NAME_LEN + i, presetName[i]);
 }
 
 void loadConfig(byte slot)
@@ -167,6 +171,18 @@ void loadConfig(byte slot)
     byte bch = EEPROM.read(BUTTON_CHANNEL_EEPROM_ADDR + slot);
     settings.midiChannel = (bch > 15) ? 0 : bch; // guard virgin/old-format slots (0xFF) -> channel 1
     // oledPrint("channel: " + saveState.midiChannel);
+
+    int naddr = NAME_EEPROM_ADDR + slot * NAME_LEN;
+    if (EEPROM.read(naddr) == 0xFF) // unnamed / legacy slot -> blank name
+    {
+        for (byte i = 0; i < NAME_LEN; i++)
+            presetName[i] = ' ';
+    }
+    else
+    {
+        for (byte i = 0; i < NAME_LEN; i++)
+            presetName[i] = EEPROM.read(naddr + i);
+    }
 }
 
 void controllerBegin() // set midi config

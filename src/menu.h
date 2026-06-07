@@ -127,6 +127,99 @@ void drawMenu()
     }
 }
 
+// draws the name-entry field: full NAME_LEN width, x-centered, with a cursor
+// marker beneath the active position. show=false blanks the name (blink frame).
+void drawNameEntry(byte cursor, bool show)
+{
+    oled.clear();
+    oledPrint(F("name your preset:"), 0, 0, 0); // small-font header
+    byte col = (128 - NAME_LEN * 8) / 2;        // fixed-width field so the marker stays aligned
+    oledAt(col, 1, 1);                          // big field on rows 1-2
+    for (byte i = 0; i < NAME_LEN; i++)
+        oled.print(show ? presetName[i] : ' ');
+    oledAt(col + cursor * 8, 3, 0); // cursor marker on row 3
+    oled.print(F("^"));
+}
+
+// name-entry alphabet: blank (bottom) | A-Z | 0-9 | symbols | blank (top).
+// both knob extremes give a blank so a position is easy to clear.
+const char charset[] PROGMEM = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+&#!?.*=/ ";
+#define CHARSET_LEN 48 // glyph count incl. both blank ends (= sizeof(charset) - 1)
+
+// letter-input routine. starts blank. any knob sets the char at the cursor
+// (knob 0-127 -> charset); min/max move the cursor; hold mode >=2s to confirm.
+// no abort - you commit to a name (menu timeout is the only passive exit upstream).
+void enterName()
+{
+    for (byte i = 0; i < NAME_LEN; i++)
+        presetName[i] = ' ';
+    byte cursor = 0;
+    long holdT0 = 0;
+    long blinkT0 = 0;
+    bool show = true;
+    drawNameEntry(cursor, show);
+
+    while (true)
+    {
+        inputValues = shiftInUpdate();
+        updateButtons();
+        muxRead();
+        updateKnobs();
+        updateMidi();
+
+        bool dirty = false;
+
+        for (byte i = 0; i < KNOB_AMT; i++) // any knob writes the char at the cursor
+        {
+            if (knob[i].hasNew)
+            {
+                byte idx = map(knob[i].getVal(), 0, 127, 0, CHARSET_LEN - 1);
+                presetName[cursor] = pgm_read_byte(&charset[idx]);
+                dirty = true;
+            }
+        }
+
+        if (minButton.fell && cursor > 0) // cursor left
+        {
+            cursor--;
+            dirty = true;
+        }
+        if (maxButton.fell && cursor < NAME_LEN - 1) // cursor right
+        {
+            cursor++;
+            dirty = true;
+        }
+
+        if (modeButton.pressed) // hold set -> blink, confirm after 2s
+        {
+            if (holdT0 == 0)
+            {
+                holdT0 = millis();
+                blinkT0 = millis();
+                show = false;
+                dirty = true;
+            }
+            if (millis() - holdT0 > 2000)
+                break; // confirm
+            if (millis() - blinkT0 > 150)
+            {
+                blinkT0 = millis();
+                show = !show;
+                dirty = true;
+            }
+        }
+        else if (holdT0 != 0) // released before 2s -> keep editing
+        {
+            holdT0 = 0;
+            show = true;
+            dirty = true;
+        }
+
+        if (dirty)
+            drawNameEntry(cursor, show);
+    }
+}
+
 void updateMenu()
 {
     if (!(menu.active)) // activate menu
@@ -350,11 +443,12 @@ void updateMenu()
                 // save the data
                 if (s != 100) // validation
                 {
+                    enterName(); // name the preset before writing (fills presetName)
                     oled.clear();
                     oledAt(0, 1, 1);
                     oled.print(F("saving to slot "));
                     oled.print(s + 1);
-                    saveConfig(s);
+                    saveConfig(s); // writes knob config + button channel + name
                     myDelay(500);
                     menu.editing = false;
                     menu.active = false;
@@ -391,12 +485,12 @@ void updateMenu()
                 // load data
                 if (s != 100) // omit if aborted
                 {
+                    loadConfig(s); // fills presetName before we show it
                     oled.clear();
-                    oledAt(0, 1, 1);
-                    oled.print(F("loading slot "));
+                    oledPrint(F("Loading Slot "), 16, 0, 0);
                     oled.print(s + 1);
-                    loadConfig(s);
-                    myDelay(500);
+                    drawNameCentered(2, true); // name x-centered, letter-by-letter
+                    myDelay(300);
                     menu.editing = false;
                     menu.active = false;
                     redrawOled = true;

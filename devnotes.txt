@@ -2,11 +2,11 @@ todo:
 
 -optimize draw in menu. just redraw parts of screen in some cases
     -stop flickering in main screen if moving two knobs at the same time: at some timer to limit the changing of current knob. 
-    -stop flickering in menu. incorporate oled writing stuff in menu loop directly to only rewrite the current changing number
+    -stop flickering in menu. incorporate oled writing stuff in menu loop directly to only rewrite the current changing number /grill-me
+    
 -cycle led colour from millis()
--add a menu option to change the midichannel for the four buttons. keep this channel in eeprom as part of savestate. /grill-me
-
 
 dream features:
 
 -4 savestate preset naming add option as menu item "name preset". add letter input routine. only give capital letters / show this preset name on startup. while "loading slot n" is displayed, also show the name on lower line. bring in this name the same way letter by letter. make it x centered.
+    DONE - folded naming into Save (no separate "name preset" item) so name+config write together. 12 chars, charset = blank|A-Z|0-9|symbols|blank (both knob ends blank). min/max=cursor, any knob=char, hold mode 2s=confirm. names in eeprom 908..955. shown x-centered letter-by-letter on startup + menu-load.

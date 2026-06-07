@@ -7,6 +7,8 @@
 #define RECENT_SLOT_EEPROM_ADDR 1022 // only one byte to keep recent saveslot
 #define CONTROLLER_CONFIG_EEPROM_ADDR 900 // keeps controller settings
 #define BUTTON_CHANNEL_EEPROM_ADDR 904 // 4 bytes (one per save slot) for the note-button channel, kept clear of knob slots (addr 1..497) and recent-slot (1022)
+#define NAME_LEN 12 // preset name length in chars (capitals + blanks)
+#define NAME_EEPROM_ADDR 908 // 4 save slots x NAME_LEN bytes (908..955), clear of button channel (904..907) and recent-slot (1022)
 
 #define PLUG_INDIC_PIN 7 // pin number of plug pin
 
