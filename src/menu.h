@@ -26,6 +26,53 @@ void checkConflict()
     }
 }
 
+// redraws ONLY the editing value line (cases 0-3) without an oled.clear(), so
+// nudging a value doesn't flicker the whole screen. for cc/ch the header is
+// reprinted in place (overwrites identical pixels, no blank) which also wipes a
+// stale "CC/CH taken" warning; clearToEOL erases leftover digits (127 -> 9).
+void drawEditValue()
+{
+    menu.t0 = millis(); // reset menu timer on every change
+
+    switch (menu.pos)
+    {
+    case 0:
+        oledPrint(F("---------EDIT---------"), 0, 0, 0);
+        oledAt(0, 1, 1);
+        oled.print(F("Knob "));
+        oled.print(menu.editingKnob + 1);
+        oled.print(F(" CC: "));
+        oled.print(knob[menu.editingKnob].midiCC);
+        oled.clearToEOL();
+        checkConflict();
+        break;
+    case 1:
+        oledPrint(F("---------EDIT---------"), 0, 0, 0);
+        oledAt(0, 1, 1);
+        oled.print(F("Knob "));
+        oled.print(menu.editingKnob + 1);
+        oled.print(F(" CH: "));
+        oled.print(knob[menu.editingKnob].midiChannel + 1);
+        oled.clearToEOL();
+        checkConflict();
+        break;
+    case 2:
+        oledAt(0, 1, 1);
+        oled.print(F("set all ch: "));
+        oled.print(menu.currentVal);
+        oled.clearToEOL();
+        break;
+    case 3:
+        oledAt(0, 1, 1);
+        oled.print(F("Button CH: "));
+        oled.print(settings.midiChannel + 1);
+        oled.clearToEOL();
+        break;
+    default:
+        break;
+    }
+}
+
 void drawMenu()
 {
     menu.t0 = millis(); // reset menu timer on every change
@@ -86,58 +133,31 @@ void drawMenu()
     else // editing menu item
     {
         oledPrint(F("---------EDIT---------"), 0, 0, 0);
-        oledPrint(F("-        set        +"), 0, 3, 0);
-        // oledPrint("back", 60, 3, 0);
-        // oledPrint("+", 105, 3•, 0);
 
-        switch (menu.pos)
-        {
-            case 0:
-            oledAt(0, 1, 1); // cc range is from 0 - 127
-            oled.print(F("Knob "));
-            oled.print(menu.editingKnob + 1);
-            oled.print(F(" CC: "));
-            oled.print(knob[menu.editingKnob].midiCC);
-            checkConflict();
-            break;
-            case 1:
-            oledAt(0, 1, 1); // midi channel range is from 1-16
-            oled.print(F("Knob "));
-            oled.print(menu.editingKnob + 1);
-            oled.print(F(" CH: "));
-            oled.print(knob[menu.editingKnob].midiChannel + 1);
-            checkConflict();
-            break;
-            case 2:
-            oledAt(0, 1, 1);
-            oled.print(F("set all ch: "));
-            oled.print(menu.currentVal);
-            break;
-            case 3:
-            oledAt(0, 1, 1); // button (note) channel, 1-16
-            oled.print(F("Button CH: "));
-            oled.print(settings.midiChannel + 1);
-            break;
-            case 6: // selecting save slot
+        if (menu.pos == 6) // selecting save slot
             oledPrint(F("         back         "), 0, 3, 0);
-            break;
-            default:
-            break;
+        else
+        {
+            oledPrint(F("-        set        +"), 0, 3, 0);
+            drawEditValue(); // value line (cases 0-3); shared with the flicker-free nudge path
         }
     }
 }
 
 // draws the name-entry field: full NAME_LEN width, x-centered, with a cursor
 // marker beneath the active position. show=false blanks the name (blink frame).
+// redraws in place (no oled.clear()) to avoid flicker on every char/blink frame.
+// caller clears the screen once before the first draw. the fixed-width name field
+// overwrites itself; only the cursor row is region-cleared so the marker can move.
 void drawNameEntry(byte cursor, bool show)
 {
-    oled.clear();
-    oledPrint(F("name your preset:"), 0, 0, 0); // small-font header
+    oledPrint(F("name your preset:"), 0, 0, 0); // static header, redrawn in place
     byte col = (128 - NAME_LEN * 8) / 2;        // fixed-width field so the marker stays aligned
     oledAt(col, 1, 1);                          // big field on rows 1-2
     for (byte i = 0; i < NAME_LEN; i++)
         oled.print(show ? presetName[i] : ' ');
-    oledAt(col + cursor * 8, 3, 0); // cursor marker on row 3
+    oled.clear(col, col + NAME_LEN * 8 - 1, 3, 3); // wipe old marker
+    oledAt(col + cursor * 8, 3, 0);                 // cursor marker on row 3
     oled.print(F("^"));
 }
 
@@ -157,6 +177,7 @@ void enterName()
     long holdT0 = 0;
     long blinkT0 = 0;
     bool show = true;
+    oled.clear(); // clear once; drawNameEntry redraws in place afterwards
     drawNameEntry(cursor, show);
 
     while (true)
@@ -278,7 +299,7 @@ void updateMenu()
                     else
                         menu.currentVal -= 1;
                     knob[menu.editingKnob].midiCC = menu.currentVal;
-                    drawMenu();
+                    drawEditValue();
                 }
                 if (maxButton.fell || (maxButton.didHold && maxButton.pressed))
                 {
@@ -286,13 +307,13 @@ void updateMenu()
                     if (menu.currentVal >= 128)
                         menu.currentVal = 0;
                     knob[menu.editingKnob].midiCC = menu.currentVal;
-                    drawMenu();
+                    drawEditValue();
                 }
                 if (knob[menu.editingKnob].hasNew) // can edit menuValue with knob
                 {
                     menu.currentVal = knob[menu.editingKnob].getVal();
                     knob[menu.editingKnob].midiCC = knob[menu.editingKnob].getVal();
-                    drawMenu();
+                    drawEditValue();
                 }
 
                 break;
@@ -305,7 +326,7 @@ void updateMenu()
                     if (menu.currentVal == 0)
                         menu.currentVal = 16;
                     knob[menu.editingKnob].midiChannel = menu.currentVal - 1;
-                    drawMenu();
+                    drawEditValue();
                 }
                 if (maxButton.fell || (maxButton.didHold && maxButton.pressed))
                 {
@@ -314,13 +335,13 @@ void updateMenu()
                     if (menu.currentVal == 17)
                         menu.currentVal = 1;
                     knob[menu.editingKnob].midiChannel = menu.currentVal - 1;
-                    drawMenu();
+                    drawEditValue();
                 }
                 if (knob[menu.editingKnob].hasNew) // can edit menuValue with knob
                 {
                     menu.currentVal = knob[menu.editingKnob].getVal();
                     knob[menu.editingKnob].midiChannel = map(knob[menu.editingKnob].getVal(), 0, 127, 0, 15);
-                    drawMenu();
+                    drawEditValue();
                 }
                 break;
 
@@ -336,7 +357,7 @@ void updateMenu()
                         knob[i].midiChannel = menu.currentVal - 1; // save channel as 0-15, show and send as 1-16
                     }
 
-                    drawMenu();
+                    drawEditValue();
                 }
                 if (maxButton.fell || (maxButton.didHold && maxButton.pressed))
                 {
@@ -349,7 +370,7 @@ void updateMenu()
                     {
                         knob[i].midiChannel = menu.currentVal - 1; // save channel as 0-15, show and send as 1-16
                     }
-                    drawMenu();
+                    drawEditValue();
                 }
 
                 break;
@@ -362,7 +383,7 @@ void updateMenu()
                     if (menu.currentVal == 0)
                         menu.currentVal = 16;
                     settings.midiChannel = menu.currentVal - 1; // store 0-15
-                    drawMenu();
+                    drawEditValue();
                 }
                 if (maxButton.fell || (maxButton.didHold && maxButton.pressed))
                 {
@@ -370,7 +391,7 @@ void updateMenu()
                     if (menu.currentVal == 17)
                         menu.currentVal = 1;
                     settings.midiChannel = menu.currentVal - 1; // store 0-15
-                    drawMenu();
+                    drawEditValue();
                 }
                 break;
 

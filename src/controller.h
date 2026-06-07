@@ -48,6 +48,7 @@ knob_c knob[KNOB_AMT];
 char presetName[NAME_LEN]; // current slot's name, space-padded (blank = ' ')
 
 byte activeKnob = 0;
+long activeKnobT0 = 0; // ms of the active knob's last move; locks the home screen against other knobs stealing it
 
 void updateKnobs()
 {
@@ -70,6 +71,7 @@ void updateKnobs()
         {
             if (i == activeKnob)
             {
+                activeKnobT0 = millis(); // refresh lock while the active knob keeps moving
                 // update oled if knob was moved
                 if (minButton.pressed)
                 {
@@ -85,9 +87,10 @@ void updateKnobs()
                 }
             }
 
-            else if (!maxButton.pressed && !minButton.pressed)
+            else if (!maxButton.pressed && !minButton.pressed && millis() - activeKnobT0 > 250)
             {
-                activeKnob = i;
+                activeKnob = i; // steal the screen only after the active knob has been idle 250ms
+                activeKnobT0 = millis();
             }
         }
     }
