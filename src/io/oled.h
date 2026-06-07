@@ -21,7 +21,7 @@ void oledBegin()
     oled.begin(&Adafruit128x32, SSD1306_I2C_ADDRESS);
 }
 
-void oledPrint(String text, byte col=0, byte row=0, byte style=0)
+void oledAt(byte col = 0, byte row = 0, byte style = 0) // set font + cursor
 {
     switch (style)
     {
@@ -44,5 +44,20 @@ void oledPrint(String text, byte col=0, byte row=0, byte style=0)
     }
     oled.set1X();
     oled.setCursor(col, row);
+}
+
+// flash-string print. avoids Arduino String class (saves flash)
+void oledPrint(const __FlashStringHelper *text, byte col = 0, byte row = 0, byte style = 0)
+{
+    oledAt(col, row, style);
     oled.print(text);
+}
+
+void oledPrintPad3(byte v) // right-align number to width 3 with leading spaces
+{
+    if (v < 100)
+        oled.print(' ');
+    if (v < 10)
+        oled.print(' ');
+    oled.print(v);
 }

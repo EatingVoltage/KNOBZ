@@ -77,9 +77,12 @@ void debugButtons()
     for (byte i = 0; i < 7; i++)
     {
         if (shiftInReadBit(i))
-            oledPrint(String(i), i * 20, 1, 0);
+        {
+            oledAt(i * 20, 1, 0);
+            oled.print(i);
+        }
         else
-            oledPrint("  ", i * 15, 1, 0);
+            oledPrint(F("  "), i * 15, 1, 0);
     }
 
     // if (minButton.pressed)

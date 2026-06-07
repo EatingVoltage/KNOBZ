@@ -21,7 +21,7 @@ void checkConflict()
         if ((knob[menu.editingKnob].midiCC == knob[i].midiCC) && (knob[menu.editingKnob].midiChannel == knob[i].midiChannel) && i != menu.editingKnob)
         {
             // menu.ccConflict = true;
-            oledPrint("! CC/CH taken !", 25, 0, 0);
+            oledPrint(F("! CC/CH taken !"), 25, 0, 0);
         }
     }
 }
@@ -35,37 +35,43 @@ void drawMenu()
 
     if (!menu.editing) // selecting menu item
     {
-        oledPrint("---------MENU--------", 0, 0, 0);
-        oledPrint("<-       ok       ->", 0, 3, 0);
+        oledPrint(F("---------MENU--------"), 0, 0, 0);
+        oledPrint(F("<-       ok       ->"), 0, 3, 0);
 
         switch (menu.pos)
         {
         case 0:
-            oledPrint("Set Knob " + String(menu.editingKnob + 1) + " CC.", 0, 1, 1);
+            oledAt(0, 1, 1);
+            oled.print(F("Set Knob "));
+            oled.print(menu.editingKnob + 1);
+            oled.print(F(" CC."));
             break;
 
         case 1:
-            oledPrint("Set Knob " + String(menu.editingKnob + 1) + " CH.", 0, 1, 1);
+            oledAt(0, 1, 1);
+            oled.print(F("Set Knob "));
+            oled.print(menu.editingKnob + 1);
+            oled.print(F(" CH."));
             break;
 
         case 2:
-            oledPrint("Set all Channels", 0, 1, 1);
+            oledPrint(F("Set all Channels"), 0, 1, 1);
             break;
 
         case 3:
-            oledPrint("Clear all Knobs", 0, 1, 1);
+            oledPrint(F("Clear all Knobs"), 0, 1, 1);
             break;
 
         case 4:
-            oledPrint("Clear all MIN/MAX", 0, 1, 1);
+            oledPrint(F("Clear all MIN/MAX"), 0, 1, 1);
             break;
 
         case 5:
-            oledPrint("Save Config", 20, 1, 1);
+            oledPrint(F("Save Config"), 20, 1, 1);
             break;
 
         case 6:
-            oledPrint("Load Config", 20, 1, 1);
+            oledPrint(F("Load Config"), 20, 1, 1);
             break;
 
         default:
@@ -75,26 +81,36 @@ void drawMenu()
 
     else // editing menu item
     {
-        oledPrint("---------EDIT---------", 0, 0, 0);
-        oledPrint("-        set        +", 0, 3, 0);
+        oledPrint(F("---------EDIT---------"), 0, 0, 0);
+        oledPrint(F("-        set        +"), 0, 3, 0);
         // oledPrint("back", 60, 3, 0);
         // oledPrint("+", 105, 3•, 0);
-        
+
         switch (menu.pos)
         {
             case 0:
-            oledPrint("Knob " + String(menu.editingKnob + 1) + " CC: " + String(knob[menu.editingKnob].midiCC), 0, 1, 1); // cc range is from 0 - 127
+            oledAt(0, 1, 1); // cc range is from 0 - 127
+            oled.print(F("Knob "));
+            oled.print(menu.editingKnob + 1);
+            oled.print(F(" CC: "));
+            oled.print(knob[menu.editingKnob].midiCC);
             checkConflict();
             break;
             case 1:
-            oledPrint("Knob " + String(menu.editingKnob + 1) + " CH: " + String(knob[menu.editingKnob].midiChannel + 1), 0, 1, 1); // midi channel range is from 1-16
+            oledAt(0, 1, 1); // midi channel range is from 1-16
+            oled.print(F("Knob "));
+            oled.print(menu.editingKnob + 1);
+            oled.print(F(" CH: "));
+            oled.print(knob[menu.editingKnob].midiChannel + 1);
             checkConflict();
             break;
             case 2:
-            oledPrint("set all ch: " + String(menu.currentVal), 0, 1, 1);
+            oledAt(0, 1, 1);
+            oled.print(F("set all ch: "));
+            oled.print(menu.currentVal);
             break;
             case 5: // selecting save slot
-            oledPrint("         back         ", 0, 3, 0);
+            oledPrint(F("         back         "), 0, 3, 0);
             break;
             default:
             break;
@@ -254,7 +270,7 @@ void updateMenu()
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }
-                oledPrint(" done", 40, 2, 1);
+                oledPrint(F(" done"), 40, 2, 1);
                 myDelay(500);
                 menu.editing = false;
                 drawMenu();
@@ -268,14 +284,14 @@ void updateMenu()
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }
-                oledPrint(" done", 40, 2, 1);
+                oledPrint(F(" done"), 40, 2, 1);
                 myDelay(500);
                 menu.editing = false;
                 drawMenu();
                 break;
 
             case 5: // save controller state
-                oledPrint("Select Save Slot", 0, 1, 1);
+                oledPrint(F("Select Save Slot"), 0, 1, 1);
                 s = 100; // 0-3
                 done = false;
                 while (!done)
@@ -306,7 +322,9 @@ void updateMenu()
                 if (s != 100) // validation
                 {
                     oled.clear();
-                    oledPrint("saving to slot " + String(s + 1), 0, 1, 1);
+                    oledAt(0, 1, 1);
+                    oled.print(F("saving to slot "));
+                    oled.print(s + 1);
                     saveConfig(s);
                     myDelay(500);
                     menu.editing = false;
@@ -316,7 +334,7 @@ void updateMenu()
                 break;
 
             case 6: // load
-                oledPrint("Select Load Slot", 0, 1, 1);
+                oledPrint(F("Select Load Slot"), 0, 1, 1);
                 s = 100; // 0-3
                 done = false;
                 while (!done)
@@ -345,7 +363,9 @@ void updateMenu()
                 if (s != 100) // omit if aborted
                 {
                     oled.clear();
-                    oledPrint("loading slot " + String(s + 1), 0, 1, 1);
+                    oledAt(0, 1, 1);
+                    oled.print(F("loading slot "));
+                    oled.print(s + 1);
                     loadConfig(s);
                     myDelay(500);
                     menu.editing = false;

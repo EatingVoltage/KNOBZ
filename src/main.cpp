@@ -124,24 +124,26 @@ void setup()
   controllerBegin();
 
   // startup anim
-  String s = "KNOBZ";
+  const char *s = "KNOBZ";
   oled.setCursor(42, 0);
   oled.setFont(Arial_bold_14);
-  for (byte i = 0; i < s.length(); i++)
+  for (byte i = 0; s[i]; i++)
   {
     oled.print(s[i]);
     delay(60);
   }
   delay(600);
-  oledPrint("- by eatingVoltage -", 5, 2, 0);
-  oledPrint("FW b0.1 4/25", 30, 3, 0);
+  oledPrint(F("- by eatingVoltage -"), 5, 2, 0);
+  oledPrint(F("FW b0.1 4/25"), 30, 3, 0);
   delay(800);
   oled.setCursor(0, 3);
   oled.clearToEOL();
-  oledPrint("Loading Slot " + String(slot + 1), 0, 3, 0);
+  oledAt(0, 3, 0);
+  oled.print(F("Loading Slot "));
+  oled.print(slot + 1);
   delay(800);
   // oled.clearToEOL();
-  oledPrint(" ok.", 105, 3, 0);
+  oledPrint(F(" ok."), 105, 3, 0);
 
   // oled.setCol(0);
   // oled.clearToEOL();
