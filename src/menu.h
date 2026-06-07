@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#define MENU_ITEMS 7 // number of menu items
+#define MENU_ITEMS 8 // number of menu items
 
 struct menu_t
 {
@@ -59,18 +59,22 @@ void drawMenu()
             break;
 
         case 3:
-            oledPrint(F("Clear all Knobs"), 0, 1, 1);
+            oledPrint(F("Set Button CH."), 0, 1, 1);
             break;
 
         case 4:
-            oledPrint(F("Clear all MIN/MAX"), 0, 1, 1);
+            oledPrint(F("Clear all Knobs"), 0, 1, 1);
             break;
 
         case 5:
-            oledPrint(F("Save Config"), 20, 1, 1);
+            oledPrint(F("Clear all MIN/MAX"), 0, 1, 1);
             break;
 
         case 6:
+            oledPrint(F("Save Config"), 20, 1, 1);
+            break;
+
+        case 7:
             oledPrint(F("Load Config"), 20, 1, 1);
             break;
 
@@ -109,7 +113,12 @@ void drawMenu()
             oled.print(F("set all ch: "));
             oled.print(menu.currentVal);
             break;
-            case 5: // selecting save slot
+            case 3:
+            oledAt(0, 1, 1); // button (note) channel, 1-16
+            oled.print(F("Button CH: "));
+            oled.print(settings.midiChannel + 1);
+            break;
+            case 6: // selecting save slot
             oledPrint(F("         back         "), 0, 3, 0);
             break;
             default:
@@ -252,7 +261,27 @@ void updateMenu()
 
                 break;
 
-            case 3: // clear all
+            case 3: // set note-button channel (mirrors "set all channels")
+                menu.currentVal = settings.midiChannel + 1; // get recent data, shown 1-16
+                if (minButton.fell || (minButton.didHold && minButton.pressed))
+                {
+                    menu.currentVal--;
+                    if (menu.currentVal == 0)
+                        menu.currentVal = 16;
+                    settings.midiChannel = menu.currentVal - 1; // store 0-15
+                    drawMenu();
+                }
+                if (maxButton.fell || (maxButton.didHold && maxButton.pressed))
+                {
+                    menu.currentVal++;
+                    if (menu.currentVal == 17)
+                        menu.currentVal = 1;
+                    settings.midiChannel = menu.currentVal - 1; // store 0-15
+                    drawMenu();
+                }
+                break;
+
+            case 4: // clear all
                 // oled.clear();
                 // oledPrint("reset all?", 0, 1, 1);
                 // done = false;
@@ -276,7 +305,7 @@ void updateMenu()
                 drawMenu();
                 break;
 
-            case 4: // reset min/max
+            case 5: // reset min/max
                 for (byte i = 0; i < KNOB_AMT; i++)
                 {
                     knob[i].midiChannel = 0;
@@ -290,7 +319,7 @@ void updateMenu()
                 drawMenu();
                 break;
 
-            case 5: // save controller state
+            case 6: // save controller state
                 oledPrint(F("Select Save Slot"), 0, 1, 1);
                 s = 100; // 0-3
                 done = false;
@@ -333,7 +362,7 @@ void updateMenu()
                 }
                 break;
 
-            case 6: // load
+            case 7: // load
                 oledPrint(F("Select Load Slot"), 0, 1, 1);
                 s = 100; // 0-3
                 done = false;

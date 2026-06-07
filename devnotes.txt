@@ -1,56 +1,12 @@
 todo:
 
--check automatic loading of recent slot at setup(), should it be working?
 -optimize draw in menu. just redraw parts of screen in some cases
     -stop flickering in main screen if moving two knobs at the same time: at some timer to limit the changing of current knob. 
     -stop flickering in menu. incorporate oled writing stuff in menu loop directly to only rewrite the current changing number
 -cycle led colour from millis()
 -add a menu option to change the midichannel for the four buttons. keep this channel in eeprom as part of savestate. /grill-me
 
-code optimization:
--button.h - maybe not all vars are used. omit unused functionality
-
-done:
--change note button behaviour: note on on press, note off on release
--tick indicator leds upon note button press
--add / test lidar sensor.
--load settings.midiChannel (for note - buttons) from eeprom
--fix oled text positions
--overshoot knobs range a bit, so knobs will reach extremes garanteed
--fix display timeout
--remove bug in saving/loading
--track / fix midichannels. 0 blocks midi transmission on Serial1. use 1-16 for uartmidi and also for menu
--fix value when setting min / max - should send absolute value. 
--add set channels and ccs to default at first startup
--add repeat on change menu item
--removed all delay(), converted code to be non-blocking, thus all midi data should be forwarded
--forward dinmidi to usbmidi
--add hardware midiout jack presence pin to control out-led
--add hardware miditru
--disable output scaling on min and max editing mode
--move global settings to save slots
--forward usb midi to dinmidi
--forward dinmidi to usbmidi
--min should only go to 127-margin, max only to margin
--cleanup / reorder menu items to separate knob-specifics from globals 
--reset all min / max routine
--add set all channel routine
--add clear all routine
--load config at startup and indicate on oled on startup, track last loaded config globally and reload that on startup
--save config of all knobs
--add save anim
--show knob index on min and max homestates
--cc conflict warning
--midi activity led to non blocking
--led startup anim
--fix neopixel anims
--menu
--cc/channel editor
--buttons
--midi activity led
--usb midi
--add smoothing option (maybe hardcode to knobs only)
--improve knob filtering: average to full 10 bits, then if(difference is high enough) update value.
 
 dream features:
--name presets / show preset name on startup
+
+-4 savestate preset naming add option as menu item "name preset". add letter input routine. only give capital letters / show this preset name on startup. while "loading slot n" is displayed, also show the name on lower line. bring in this name the same way letter by letter. make it x centered.

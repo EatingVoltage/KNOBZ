@@ -144,6 +144,7 @@ void saveConfig(byte slot) // slots 0-3
         // EEPROM.put(addr, saveState);
         EEPROM_writeAnything(addr, saveState);
     }
+    EEPROM.update(BUTTON_CHANNEL_EEPROM_ADDR + slot, settings.midiChannel); // note-button channel travels with the slot
 }
 
 void loadConfig(byte slot)
@@ -163,6 +164,8 @@ void loadConfig(byte slot)
         knob[i].min = saveState.min;
         knob[i].max = saveState.max;
     }
+    byte bch = EEPROM.read(BUTTON_CHANNEL_EEPROM_ADDR + slot);
+    settings.midiChannel = (bch > 15) ? 0 : bch; // guard virgin/old-format slots (0xFF) -> channel 1
     // oledPrint("channel: " + saveState.midiChannel);
 }
 

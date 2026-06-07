@@ -133,7 +133,7 @@ void setup()
   }
   delay(600);
   oledPrint(F("- by eatingVoltage -"), 5, 2, 0);
-  oledPrint(F("FW b0.1 4/25"), 30, 3, 0);
+  oledPrint(F("FW b0.2 6/26"), 30, 3, 0);
   delay(800);
   oled.setCursor(0, 3);
   oled.clearToEOL();
