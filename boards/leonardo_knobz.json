@@ -23,7 +23,7 @@
     ],
     "mcu": "atmega32u4",
     "usb_product": "eatingVoltage KNOBZ",
-    "variant": "KNOBZ"
+    "variant": "leonardo"
   },
   "bootloader": {
     "efuse": "0xCB",
