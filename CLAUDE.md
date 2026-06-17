@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> This is an **eatingVoltage Leonardo firmware** device. The shared house style —
+> header-as-module pattern, the `src/io/` skeleton, dual USB+DIN MIDI merge, and the
+> AREF/mux/discrete-input gotchas — lives in the **evLeonardoFirmware** skill (auto-fires
+> here). This file holds only the device-specific details below.
+
 ## What this is
 
 Firmware for **KNOBZ**, a USB+DIN MIDI controller by eatingVoltage. Hardware: Arduino Leonardo (ATmega32u4) with 30 multiplexed pots/faders, a VL53L0X lidar "air knob", 7 buttons + a toggle (via a 74HC165 shift register), a 4-pixel WS2812 ring, and an SSD1306 OLED. Built with PlatformIO + Arduino framework.
