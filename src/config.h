@@ -30,6 +30,8 @@
 
 #define MIDI_DEFAULT_VEL 64 // velocity for controller button presses
 
+#define SENSOR_SWITCH_NOTE 4 // note sent by the lidar sensor toggle switch (buttons use 0-3)
+
 #define KNOB_AMT 31 // number of knob objects
 
 #define MINMAX_MARGIN 10 // limits min to 127-MINMAX_MARGIN and max to MINMAX_MARGIN

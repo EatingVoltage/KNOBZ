@@ -22,6 +22,7 @@ struct Button
 Button minButton;
 Button maxButton;
 Button modeButton;
+Button sensorSwitch; // lidar toggle switch (bit 7) - latches, sends a held midi note
 Button controllerButton[BUTTON_AMT];
 
 void updateButton(Button &myButton, bool inputVal, long tFrame) // inputVal false = button pressed down
@@ -59,11 +60,22 @@ void updateButton(Button &myButton, bool inputVal, long tFrame) // inputVal fals
     }
 }
 
+// seed the sensor switch from the current pin state so an already-on switch at
+// power-up does NOT fire a note on the first frame (boot-edge suppression).
+// requires shiftInUpdate() to have run (inputValues valid).
+void sensorSwitchInit()
+{
+    bool b = shiftInReadBit(7); // false = switch in sensor-ON position (active low)
+    sensorSwitch.input = b;
+    sensorSwitch.pressed = !b;
+}
+
 void updateButtons()
 {
     updateButton(minButton, shiftInReadBit(4), millis());
     updateButton(maxButton, shiftInReadBit(5), millis());
     updateButton(modeButton, shiftInReadBit(6), millis());
+    updateButton(sensorSwitch, shiftInReadBit(7), millis());
     updateButton(controllerButton[0], shiftInReadBit(0), millis());
     updateButton(controllerButton[1], shiftInReadBit(1), millis());
     updateButton(controllerButton[2], shiftInReadBit(2), millis());

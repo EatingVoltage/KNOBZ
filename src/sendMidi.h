@@ -48,4 +48,12 @@ void sendButtonMidi()
                 sendMidiNoteOn(i, 0, settings.midiChannel);
         }
     }
+
+    // lidar sensor toggle switch: latching note, sent on the button channel.
+    // ignores menu state (it is a hardware mode switch, not a UI button).
+    // fell = switch to sensor-ON position -> note held; rose = sensor-OFF -> note off.
+    if (sensorSwitch.fell)
+        sendMidiNoteOn(SENSOR_SWITCH_NOTE, MIDI_DEFAULT_VEL, settings.midiChannel);
+    else if (sensorSwitch.rose)
+        sendMidiNoteOn(SENSOR_SWITCH_NOTE, 0, settings.midiChannel);
 }

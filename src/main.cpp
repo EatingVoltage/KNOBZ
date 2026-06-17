@@ -114,6 +114,7 @@ void setup()
 
   // init hardware input
   shiftInInit();
+  sensorSwitchInit();       // seed switch state so it doesn't fire a note at boot
   analogReference(EXTERNAL); // using 3.3v linear regulator
   muxBegin();
 
