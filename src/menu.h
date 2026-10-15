@@ -60,6 +60,7 @@ void drawEditValue()
         oledAt(0, 1, 1);
         oled.print(F("set all ch: "));
         oled.print(knob[menu.editingKnob].midiChannel + 1); // not menu.currentVal: that is stale on first draw
+        oled.print(knob[menu.editingKnob].midiChannel + 1); // stored 0-15, shown 1-16 (currentVal is stale on first draw)
         oled.clearToEOL();
         break;
     case 3:
@@ -413,7 +414,7 @@ void updateMenu()
                 for (byte i = 0; i < KNOB_AMT; i++)
                 {
                     knob[i].midiChannel = settings.midiChannel;
-                    knob[i].midiCC = i;
+                    knob[i].midiCC = i + 1; // cc 1-31; cc 0 is bank select
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }

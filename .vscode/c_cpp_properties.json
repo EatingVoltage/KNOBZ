@@ -49,7 +49,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60119",
+                "PLATFORMIO=60200",
                 "ARDUINO_AVR_LEONARDO",
                 "USB_MIDI",
                 "F_CPU=16000000L",
@@ -57,7 +57,7 @@
                 "ARDUINO=10808",
                 "USB_VID=0x2341",
                 "USB_PID=0x8036",
-                "USB_PRODUCT=\"MINTA Fleming MultiLFO\"",
+                "USB_PRODUCT=\"eatingVoltage KNOBZ\"",
                 "USB_MANUFACTURER=\"Arduino\"",
                 "__AVR_ATmega32U4__",
                 ""
