@@ -59,7 +59,7 @@ void drawEditValue()
     case 2:
         oledAt(0, 1, 1);
         oled.print(F("set all ch: "));
-        oled.print(menu.currentVal);
+        oled.print(knob[menu.editingKnob].midiChannel + 1); // not menu.currentVal: that is stale on first draw
         oled.clearToEOL();
         break;
     case 3:
@@ -423,11 +423,9 @@ void updateMenu()
                 drawMenu();
                 break;
 
-            case 5: // reset min/max
+            case 5: // reset min/max only - keeps each knob's channel and cc
                 for (byte i = 0; i < KNOB_AMT; i++)
                 {
-                    knob[i].midiChannel = 0;
-                    knob[i].midiCC = i+1;
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }
