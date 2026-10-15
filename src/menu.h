@@ -59,7 +59,7 @@ void drawEditValue()
     case 2:
         oledAt(0, 1, 1);
         oled.print(F("set all ch: "));
-        oled.print(menu.currentVal);
+        oled.print(knob[menu.editingKnob].midiChannel + 1); // stored 0-15, shown 1-16 (currentVal is stale on first draw)
         oled.clearToEOL();
         break;
     case 3:
