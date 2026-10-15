@@ -413,7 +413,7 @@ void updateMenu()
                 for (byte i = 0; i < KNOB_AMT; i++)
                 {
                     knob[i].midiChannel = settings.midiChannel;
-                    knob[i].midiCC = i;
+                    knob[i].midiCC = i + 1; // cc 1-31; cc 0 is bank select
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }
@@ -423,11 +423,9 @@ void updateMenu()
                 drawMenu();
                 break;
 
-            case 5: // reset min/max
+            case 5: // reset min/max only - cc/channel stay untouched
                 for (byte i = 0; i < KNOB_AMT; i++)
                 {
-                    knob[i].midiChannel = 0;
-                    knob[i].midiCC = i+1;
                     knob[i].max = 127;
                     knob[i].min = 0;
                 }

@@ -80,7 +80,7 @@ void setup()
     for (byte i = 0; i < KNOB_AMT; i++) // set knobs to defaults
     {
       knob[i].midiChannel = 0;
-      knob[i].midiCC = i;
+      knob[i].midiCC = i + 1; // cc 1-31; cc 0 is bank select
       knob[i].min = 0;
       knob[i].max = 127;
     }
